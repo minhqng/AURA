@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AURA (NCKH)",
   "version": "1.0",
-  "description": "Tiện ích mở rộng dùng AI hỗ trợ người khiếm thị.",
+  "description": "Tiện ích mở rộng AI hỗ trợ người khiếm thị.",
   "icons": {
     "128": "icons/icon128.png"
   },
@@ -10,7 +10,8 @@
     "storage",
     "activeTab",
     "scripting",
-    "tts"
+    "tts",
+    "tabs"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -20,5 +21,17 @@
   },
   "action": {
     "default_popup": "src/popup/popup.html"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content_scripts/content-script.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
 }
