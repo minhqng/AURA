@@ -1,23 +1,37 @@
 {
   "manifest_version": 3,
-  "name": "Project AI",
-  "version": "0.1.0",
-  "description": "Quét DOM và chèn mô tả giả",
-
+  "name": "AURA (NCKH)",
+  "version": "1.0",
+  "description": "Tiện ích mở rộng AI hỗ trợ người khiếm thị.",
+  "icons": {
+    "128": "icons/icon128.png"
+  },
   "permissions": [
+    "storage",
     "activeTab",
+    "scripting",
+    "tts",
     "tabs"
   ],
-
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "action": {
+    "default_popup": "src/popup/popup.html"
+  },
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
       ],
       "js": [
-        "content-script.js"
+        "src/content_scripts/content-script.js"
       ],
-      "run_at": "document_idle","all_frames": true   
+      "run_at": "document_idle",
+      "all_frames": true
     }
   ]
 }
