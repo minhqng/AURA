@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Accessibility Tools (NCKH)",
+  "version": "1.0",
+  "description": "Một project nghiên cứu khoa học về công cụ hỗ trợ truy cập.",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
+}
