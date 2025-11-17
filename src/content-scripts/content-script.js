@@ -38,8 +38,6 @@ function getMockDescription(img) {
 }
 
 /**
- * MỤC 2.1: BỘ QUÉT (Scanner)
- * Nhiệm vụ: Chỉ quét và console.log ra danh sách ảnh lỗi.
  * @returns {Array} Danh sách các thẻ img bị lỗi.
  */
 function scanImages() {
