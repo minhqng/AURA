@@ -5,6 +5,13 @@
   "description": "Một project nghiên cứu khoa học về công cụ hỗ trợ truy cập.",
   "permissions": ["storage"],
   "action": {
-    "default_popup": "popup/popup.html"
-  }
+    "default_popup": "src/popup/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/popup/content/content.js"],
+      "css": ["src/popup/engine.css"]
+    }
+  ]
 }
