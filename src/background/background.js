@@ -1,6 +1,5 @@
-const GEMINI_API_KEY = 'API key';
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
+import { GEMINI_API_KEY, GEMINI_API_URL } from '../config.js';
+const API_URL_WITH_KEY = `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`;
 async function imageUrlToBase64(url) {
   try {
     const response = await fetch(url);
