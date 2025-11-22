@@ -1,51 +1,83 @@
-console.log('Mock Service background worker loaded');
+const GEMINI_API_KEY = 'API key';
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+async function imageUrlToBase64(url) {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error('Không thể tải ảnh.');
+  }
+}
+
+async function fetchAIDescription(imageUrl) {
+  try {
+    const base64Image = await imageUrlToBase64(imageUrl);
+
+    const requestBody = {
+      contents: [{
+        parts: [
+          { text: "Mô tả bức ảnh này bằng một câu tiếng Việt tự nhiên, ngắn gọn để hỗ trợ người khiếm thị." },
+          {
+            inline_data: {
+              mime_type: "image/jpeg",
+              data: base64Image
+            }
+          }
+        ]
+      }]
+    };
+
+    const response = await fetch(GEMINI_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Lỗi API (${response.status}): ${errorText}`);
+    }
+
+    const data = await response.json();
+
+    if (data.candidates && data.candidates.length > 0) {
+      const description = data.candidates[0].content.parts[0].text;
+      return { status: 'success', description: description };
+    } else {
+      return { status: 'error', message: 'AI không trả về kết quả nào.' };
+    }
+
+  } catch (error) {
+    console.error(error);
+    return { status: 'error', message: error.message };
+  }
+}
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('background received message', message);
-  if (!message || !message.type) {
-    sendResponse({ status: 'error', error: 'Missing message.type' });
-    return; 
-  }
-
   if (message.type === 'GET_AI_DESCRIPTION') {
-    const delayMs = typeof message.delayMs === 'number' ? message.delayMs : 1000;
-    setTimeout(() => {
-      const fakeText = message.input ? `Mô tả giả về: ${message.input}` : 'Đây là mô tả giả: một con mèo';
-      const response = { status: 'success', description: fakeText, timestamp: Date.now() };
-      console.log('Sending mocked AI response', response);
-      sendResponse(response);
-    }, delayMs);
+    fetchAIDescription(message.imageUrl).then(result => {
+      sendResponse(result);
+    });
+    return true;
+  }
 
-    return true; 
-  }
   if (message.type === 'SPEAK_TEXT') {
-    const text = message.text || '';
-    if (!text) {
-      sendResponse({ status: 'error', error: 'No text provided' });
-      return;
-    }
-    const ttsOptions = message.ttsOptions || {
-      rate: 1.0,
-      pitch: 1.0,
-      lang: 'vi-VN'
-    };
-    try {
-      chrome.tts.speak(text, ttsOptions, () => {
-        const err = chrome.runtime.lastError;
-        if (err) {
-          console.error('TTS error:', err);
-          sendResponse({ status: 'error', error: err.message || String(err) });
-        } else {
-          console.log('TTS started for text:', text);
-          sendResponse({ status: 'success', spokenText: text });
-        }
-      });
-      return true;
-    } catch (e) {
-      console.error('Exception calling tts:', e);
-      sendResponse({ status: 'error', error: e.message });
-      return;
-    }
+    chrome.tts.stop();
+    chrome.tts.speak(message.text, {
+      lang: 'vi-VN',
+      rate: 1.0
+    });
   }
-  sendResponse({ status: 'error', error: 'Unknown message.type' });
 });
