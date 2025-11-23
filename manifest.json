@@ -1,35 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "AURA (NCKH)",
-  "version": "1.0",
-  "description": "Tiện ích mở rộng AI hỗ trợ người khiếm thị.",
-  "icons": {
-    "128": "icons/icon128.png"
-  },
+  "name": "Project AI - Week 2 Integration",
+  "version": "0.2.0",
+  "description": "Quét DOM, gọi AI mô tả và chèn Alt",
+
   "permissions": [
-    "storage",
     "activeTab",
-    "scripting",
-    "tts",
-    "tabs"
+    "tabs",
+    "tts" 
   ],
-  "host_permissions": [
-    "https://generativelanguage.googleapis.com/*",
-    "<all_urls>"
-  ],
+
   "background": {
-    "service_worker": "src/background/background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
-  "action": {
-    "default_popup": "src/popup/popup.html"
-  },
+
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
       ],
       "js": [
-        "src/content_scripts/content-script.js"
+        "content-script.js"
       ],
       "run_at": "document_idle",
       "all_frames": true
