@@ -47,11 +47,15 @@ html.a11y-inverted img, html.a11y-inverted video, html.a11y-inverted video * {
       s = s / 100;
     }
     try {
-      // set the root font-size so rem-based layouts scale predictably
-      document.documentElement.style.fontSize = s * 100 + "%";
+      if (document.body) {
+        document.body.style.fontSize = s * 100 + "%";
+      } else {
+        document.documentElement.style.fontSize = s * 100 + "%";
+      }
     } catch (e) {
       try {
-        document.body.style.fontSize = s * 100 + "%";
+        if (document.body) document.body.style.zoom = s;
+        else document.documentElement.style.zoom = s;
       } catch (e2) {
         // ignore
       }

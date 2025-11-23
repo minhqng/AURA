@@ -55,7 +55,11 @@
               <span>Đảo ngược màu sắc trang web</span>
             </label>
             <label class="switch">
-              <input type="checkbox" id="contrast-toggle" />
+              <input
+                type="checkbox"
+                id="contrast-toggle"
+                aria-label="Tương phản cao"
+              />
               <span class="slider-thumb"></span>
             </label>
           </div>
@@ -110,13 +114,14 @@
               min="80"
               max="200"
               value="100"
+              aria-label="Kích thước phóng chữ"
             />
             <div class="slider-labels">
               <span>A 80%</span>
               <span>A 200%</span>
             </div>
           </div>
-          <p id="preview-text" class="preview-text">
+          <p id="preview-text" class="preview-text" aria-live="polite">
             Đây là văn bản mẫu để xem trước thay đổi kích thước phóng chữ của
             bạn.
           </p>
