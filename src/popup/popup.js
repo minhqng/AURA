@@ -41,17 +41,35 @@ document.addEventListener("DOMContentLoaded", function () {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs || tabs.length === 0) return;
       tabs.forEach((tab) => {
+        // Skip tabs where content scripts cannot be injected
+        if (!tab || !tab.url) return;
+        if (!tab.url.startsWith("http:") && !tab.url.startsWith("https:"))
+          return;
+
+        // Send messages using the callback form and handle runtime.lastError
         try {
-          chrome.tabs.sendMessage(tab.id, {
-            type: "CHANGE_FONT_SIZE",
-            payload: { scale: scale },
-          });
-          chrome.tabs.sendMessage(tab.id, {
-            type: "TOGGLE_CONTRAST",
-            payload: { isEnabled: isContrastOn },
-          });
+          chrome.tabs.sendMessage(
+            tab.id,
+            { type: "CHANGE_FONT_SIZE", payload: { scale: scale } },
+            function (response) {
+              if (chrome.runtime.lastError) {
+                // receiving end does not exist on this tab — ignore silently
+                return;
+              }
+            }
+          );
+
+          chrome.tabs.sendMessage(
+            tab.id,
+            { type: "TOGGLE_CONTRAST", payload: { isEnabled: isContrastOn } },
+            function (response) {
+              if (chrome.runtime.lastError) {
+                return;
+              }
+            }
+          );
         } catch (e) {
-          // ignore; tab may not have the content script injected on extension pages
+          // ignore unexpected errors
         }
       });
     });

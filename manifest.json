@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/popup/content/content.js"],
+      "js": ["src/content/cs_ui.js", "src/popup/content/content.js"],
       "css": ["src/popup/engine.css"]
     }
   ]
