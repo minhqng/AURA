@@ -3,25 +3,22 @@
   "name": "AURA (NCKH)",
   "version": "1.0",
   "description": "Tiện ích mở rộng AI hỗ trợ người khiếm thị (Tích hợp UI & AI).",
-
-  "permissions": ["storage", "activeTab", "scripting", "tts", "tabs"],
-  "host_permissions": ["<all_urls>"],
-  "background": {
-    "service_worker": "src/background/background.js",
-
+  "icons": {
+    "128": "icons/icon128.png"
+  },
   "permissions": [
-    "storage",      
+    "storage",
     "activeTab",
     "scripting",
-    "tts",          
+    "tts",
     "tabs"
   ],
   "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "src/background/background.js", 
-
+    "service_worker": "src/background/background.js",
     "type": "module"
   },
   "action": {
@@ -30,22 +27,26 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-<<<<<<< HEAD
-      "js": ["src/content-scripts/content-script.js"],
-      "run_at": "document_idle",
-      "all_frames": true
-=======
-      "js": ["src/content_scripts/cs_ai.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content_scripts/cs_ai.js"
+      ],
       "run_at": "document_idle",
       "all_frames": true
     },
     {
-      "matches": ["<all_urls>"],
-      "js": ["src/content_scripts/cs_ui.js"], 
-      "css": ["src/content_scripts/injector.css"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content_scripts/cs_ui.js"
+      ],
+      "css": [
+        "src/content_scripts/injector.css"
+      ],
       "run_at": "document_idle"
->>>>>>> dd37121302769f72a92fd217ef6756502916a381
     }
   ]
 }
