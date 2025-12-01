@@ -1,30 +1,49 @@
 {
   "manifest_version": 3,
-  "name": "Project AI - Week 2 Integration",
-  "version": "0.2.0",
-  "description": "Quét DOM, gọi AI mô tả và chèn Alt",
-
+  "name": "AURA (NCKH)",
+  "version": "1.0",
+  "description": "Tiện ích mở rộng AI hỗ trợ người khiếm thị (Tích hợp UI & AI).",
   "permissions": [
+    "storage",
     "activeTab",
-    "tabs",
-    "tts" 
+    "scripting",
+    "tts",
+    "tabs"
   ],
-
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "<all_urls>"
+  ],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "src/background/background.js",
     "type": "module"
   },
-
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": "icons/icon128.png"
+  },
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
       ],
       "js": [
-        "content-script.js"
+        "src/content_scripts/cs_ai.js"
       ],
       "run_at": "document_idle",
       "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/content_scripts/cs_ui.js"
+      ],
+      "css": [
+        "src/content_scripts/injector.css"
+      ],
+      "run_at": "document_idle"
     }
   ]
 }
