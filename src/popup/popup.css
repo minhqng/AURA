@@ -1,0 +1,286 @@
+:root {
+  --primary-color: #6a11cb;
+  --primary-light: #e6e0ff;
+  --secondary-color: #007acc;
+  --secondary-light: #e0f5ff;
+  --bg-color: #f4f4f7;
+  --card-bg: #ffffff;
+  --text-primary: #1c1c1e;
+  --text-secondary: #6e6e73;
+  --border-color: #e5e5e5;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  width: 340px;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. HEADER */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, var(--primary-color) 0%, #2575fc 100%);
+  color: white;
+  padding: 14px 16px;
+}
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-icon {
+  width: 32px;
+  height: 32px;
+}
+.title-text {
+  display: flex;
+  flex-direction: column;
+}
+.title-text strong {
+  font-size: 1em;
+  font-weight: 600;
+}
+.title-text span {
+  font-size: 0.75em;
+  opacity: 0.8;
+}
+.settings-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+}
+.settings-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* 2. CARD */
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  margin: 16px;
+  margin-top: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.card-title {
+  display: flex;
+  flex-direction: column;
+}
+.card-title strong {
+  font-weight: 600;
+}
+.card-title span {
+  font-size: 0.85em;
+  color: var(--text-secondary);
+}
+.card-body {
+  padding: 0 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.setting-label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+}
+.setting-label span {
+  font-size: 0.8em;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* 3. CUSTOM TOGGLE SWITCH */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider-thumb {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+.slider-thumb:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+input:checked + .slider-thumb {
+  background-color: var(--primary-color);
+}
+input:checked + .slider-thumb:before {
+  transform: translateX(22px);
+}
+
+/* 4. INFO BOX */
+.info-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-light);
+  color: #3b0a79;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+.info-box svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* 5. CUSTOM FONT SLIDER */
+.font-value {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--primary-color);
+  background-color: var(--primary-light);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.slider-container {
+  display: flex;
+  flex-direction: column;
+}
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  outline: none;
+  border-radius: 5px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-color);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--primary-color);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75em;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.preview-text {
+  font-size: 100%; /* Sẽ được JS cập nhật */
+  text-align: center;
+  padding: 12px;
+  background: var(--bg-color);
+  border-radius: 8px;
+  margin: 0;
+  margin-top: 8px;
+  color: var(--text-secondary);
+}
+
+/* 6. FOOTER */
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.8em;
+}
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #34c759;
+  font-weight: 500;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #34c759;
+  border-radius: 50%;
+}
+.help-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+.help-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Hide the info box (purple note) as requested */
+.info-box {
+  display: none !important;
+}
