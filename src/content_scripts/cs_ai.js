@@ -1,52 +1,101 @@
-console.log(`=== AURA AI: Chạy tại ${window.location.href} ===`);
+console.log(`=== AURA AI: Đã kích hoạt tại ${window.location.href} ===`);
 
-const API_DELAY_MS = 4200; 
+const API_DELAY_MS = 3000; 
+const MIN_SIZE = 150;
+const PREFETCH_MARGIN = '800px';
 
-const imageQueue = [];
+let imageQueue = []; 
 let isProcessingQueue = false;
 
-function isImageMissingAlt(img) {
-  if (img.width < 60 || img.height < 60) return false;
-  if (!img.hasAttribute('alt') || img.alt.trim() === '') return true;
-  
-  const lowerAlt = img.alt.toLowerCase();
+function isJunkImage(img) {
+  // 1. Loại bỏ ảnh quá nhỏ (icon, sticker, nút bấm)
+  if (img.width < MIN_SIZE || img.height < MIN_SIZE) return true;
 
-  const invalidExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', 'may be an image'];
-  return invalidExtensions.some(ext => lowerAlt.includes(ext));
+  // 2. Kiểm tra Alt
+  if (img.hasAttribute('alt') && img.alt.trim() !== '') {
+    const lowerAlt = img.alt.toLowerCase();
+  
+    const badKeywords = [
+      '.jpg', '.png', '.jpeg', '.gif', '.webp',
+      'image', 'photo', 'screenshot', 
+      'may be an image', 'undefined', 'null'
+    ];
+    if (!badKeywords.some(key => lowerAlt.includes(key))) {
+      return true;
+    }
+  }
+
+  // 3. Lọc theo Class rác của Facebook (Sticker, Emoji)
+  const className = (img.className || '').toLowerCase();
+  if (className.includes('emoji') || className.includes('sticker') || className.includes('badge')) {
+    return true;
+  }
+
+  return false;
 }
 
-function addToQueue(img) {
-  if (img.dataset.aiStatus) return;
-
-  img.dataset.aiStatus = 'queued';
-  img.style.border = '4px dotted #95a5a6';
-
-  imageQueue.push(img);
+/**
+ * @param {HTMLImageElement} img 
+ * @param {boolean} isPriority
+ */
+function addToQueue(img, isPriority = false) {
+  if (img.dataset.aiStatus === 'processing' || img.dataset.aiStatus === 'done') return;
   
-  processQueue();
+  if (isJunkImage(img)) return;
+
+  if (!img.hasAttribute('alt') || img.alt.trim() === '' || img.alt === 'image') {
+    img.alt = "Đang phân tích hình ảnh, vui lòng chờ...";
+  }
+  img.style.cursor = 'wait';
+
+  if (isPriority) {
+    removeFromQueue(img); 
+    imageQueue.unshift(img); 
+    
+    img.dataset.aiStatus = 'queued_priority';
+    img.style.border = '4px dashed #9b59b6'; // Viền TÍM (Ưu tiên)
+    processQueue();
+
+  } else {
+    if (!imageQueue.includes(img) && img.dataset.aiStatus !== 'queued') {
+      imageQueue.push(img);
+      
+      img.dataset.aiStatus = 'queued';
+      img.style.border = '4px dotted #95a5a6'; // Viền XÁM (Đang xếp hàng)
+      processQueue();
+    }
+  }
+}
+
+function removeFromQueue(img) {
+  const index = imageQueue.indexOf(img);
+  if (index > -1) {
+    imageQueue.splice(index, 1);
+    if (img.dataset.aiStatus === 'queued') {
+      delete img.dataset.aiStatus;
+      img.style.border = '';
+      img.style.cursor = 'default';
+    }
+  }
 }
 
 async function processQueue() {
-  if (isProcessingQueue) return;
+  if (isProcessingQueue) return; 
   if (imageQueue.length === 0) return;
 
   isProcessingQueue = true;
-
   const img = imageQueue.shift();
-
-  await processSingleImage(img);
   
+  await processSingleImage(img);
   setTimeout(() => {
     isProcessingQueue = false;
-    processQueue();
+    processQueue(); 
   }, API_DELAY_MS);
 }
 
 async function processSingleImage(img) {
   img.dataset.aiStatus = 'processing';
-  img.style.border = '4px dashed #f1c40f';
-  
-  console.log(`[Calling AI] Đang gọi API cho ảnh: ${img.src.slice(0, 30)}...`);
+  img.style.border = '4px dashed #f1c40f'; 
 
   try {
     const response = await chrome.runtime.sendMessage({
@@ -57,55 +106,60 @@ async function processSingleImage(img) {
     if (response && response.status === 'success') {
       img.alt = response.description;
       img.dataset.aiStatus = 'done';
-      img.style.border = '4px solid #2ecc71';
+      img.style.border = '4px solid #2ecc71'; // XANH LÁ
+      img.style.cursor = 'help';
       img.title = `AI: ${response.description}`;
     } else {
       throw new Error(response.message || 'Unknown Error');
     }
 
   } catch (error) {
-    console.error(`[Error] Ảnh ${img.src}:`, error);
+    console.error(`[Error]`, error);
     img.dataset.aiStatus = 'error';
-    img.style.border = '2px solid #e74c3c'; 
-    img.title = "Lỗi/Hết quota";
+    img.style.border = '2px solid #e74c3c'; // ĐỎ
+    img.alt = "Không thể phân tích ảnh này.";
+    img.style.cursor = 'not-allowed';
   }
 }
 
-const intersectionObserver = new IntersectionObserver((entries, observer) => {
+const intersectionObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
+    const img = entry.target;
     if (entry.isIntersecting) {
-      const img = entry.target;
- 
-      if (isImageMissingAlt(img)) {
-        addToQueue(img);
-      }
-      
-      observer.unobserve(img);
+      addToQueue(img, false);
+    } else {
+      removeFromQueue(img);
     }
   });
-}, { rootMargin: '50px', threshold: 0.1 });
+}, { 
+  rootMargin: `0px 0px ${PREFETCH_MARGIN} 0px`,
+  threshold: 0.01 
+});
 
 function registerImage(img) {
-  if (img.dataset.aiStatus) return;
-  if (!isImageMissingAlt(img)) return;
+  if (img.dataset.aiRegistered) return;
+  img.dataset.aiRegistered = 'true';
   intersectionObserver.observe(img);
 }
 
+function handleUserPriority(e) {
+  const target = e.target;
+  if (target.tagName === 'IMG') {
+    addToQueue(target, true);
+  }
+}
+document.addEventListener('focus', handleUserPriority, true); 
+document.addEventListener('mouseover', handleUserPriority);
+
 function setupMutationObserver() {
-  const observerCallback = (mutationsList) => {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        mutation.addedNodes.forEach(node => {
-          if (node.nodeName === 'IMG') {
-            registerImage(node);
-          } else if (node.querySelectorAll) {
-            node.querySelectorAll('img').forEach(registerImage);
-          }
-        });
-      }
-    }
-  };
-  const observer = new MutationObserver(observerCallback);
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeName === 'IMG') registerImage(node);
+        else if (node.querySelectorAll) node.querySelectorAll('img').forEach(registerImage);
+      });
+    });
+  });
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
