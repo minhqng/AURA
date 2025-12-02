@@ -1,4 +1,7 @@
-import { GEMINI_API_KEY, GEMINI_API_URL } from "../config.js";
+import { GEMINI_API_KEY, GEMINI_API_URL } from '../config.js';
+
+const API_URL_WITH_KEY = `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`;
+
 async function imageUrlToBase64(url) {
   try {
     const response = await fetch(url);
@@ -41,10 +44,10 @@ async function fetchAIDescription(imageUrl) {
       ],
     };
 
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
+    const response = await fetch(API_URL_WITH_KEY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
@@ -66,6 +69,25 @@ async function fetchAIDescription(imageUrl) {
   }
 }
 
+function handleTTS(text) {
+  chrome.tts.stop();
+
+  chrome.tts.getVoices((voices) => {
+    const vnVoice = voices.find(v => v.lang === 'vi-VN');
+
+    const speakOptions = {
+      lang: 'vi-VN',
+      rate: 1.0
+    };
+
+    if (vnVoice) {
+      speakOptions.voiceName = vnVoice.voiceName;
+    }
+
+    chrome.tts.speak(text, speakOptions);
+  });
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "GET_AI_DESCRIPTION") {
     fetchAIDescription(message.imageUrl).then((result) => {
@@ -74,11 +96,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
 
-  if (message.type === "SPEAK_TEXT") {
-    chrome.tts.stop();
-    chrome.tts.speak(message.text, {
-      lang: "vi-VN",
-      rate: 1.0,
-    });
+  if (message.type === 'SPEAK_TEXT') {
+    handleTTS(message.text);
   }
 });
