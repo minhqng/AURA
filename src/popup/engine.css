@@ -1,4 +1,3 @@
-
 /* engine.css
    Rules guarded by data attributes on <html> so content script can "unlock" them.
    Uses variables set by content script: --user-font-size-scale, --user-font-family,

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generated Page</title>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accessibility Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="global.css">
+  <style id="sections-styles">
+/* CSS for section section:AccessibilityWidget */
+.accessibility-widget {
+    width: 100%;
+    max-width: 400px;
+    background-color: var(--color-bg-widget);
+    border-radius: 16px;
+    box-shadow: 0px 25px 50px 0px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+  }
+
+  .widget-header {
+    padding: 20px 24px;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .widget-header__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .widget-header__icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-text-on-primary);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .widget-header__text h1 {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--color-text-on-primary);
+  }
+
+  .widget-header__text p {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    color: var(--color-text-on-primary-muted);
+  }
+
+  .widget-header__settings-btn {
+    width: 32px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .widget-header__settings-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .widget-main {
+    padding: 24px;
+    background-color: var(--color-bg-widget);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    flex-grow: 1;
+  }
+
+  .widget-section__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .widget-section__icon-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .widget-section__text h2 {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--color-text-primary);
+  }
+
+  .widget-section__text p {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.33;
+    color: var(--color-text-muted);
+  }
+
+  .widget-section__content {
+    background-color: var(--color-bg-content);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .toggle-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .toggle-control__text label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    line-height: 1.2;
+    display: block;
+  }
+
+  .toggle-control__text p {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--color-text-muted);
+    line-height: 1.33;
+    margin-top: 4px;
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 28px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-toggle-bg);
+    transition: .4s;
+    border-radius: 9999px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    border: 1px solid var(--color-toggle-bg);
+  }
+
+  input:checked + .slider {
+    background-color: var(--color-primary);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(28px);
+  }
+
+  .info-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .info-notice p {
+    font-size: 12px;
+    color: var(--color-text-subtle);
+  }
+
+  .font-size-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .font-size-header label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+  }
+
+  .font-size-value {
+    background-color: #eef2ff;
+    color: var(--color-primary);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .slider-container {
+    margin-bottom: 12px;
+  }
+
+  .font-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #e5e5e5;
+    outline: none;
+    border-radius: 9999px;
+  }
+
+  .font-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--color-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  }
+
+  .font-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--color-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+  }
+
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--color-text-muted);
+  }
+  .slider-label-start, .slider-label-end {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .font-preview {
+    margin-top: 17px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .quick-actions__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .quick-actions__buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .quick-actions__buttons button {
+    flex: 1;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    background-color: var(--color-bg-widget);
+    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: border-color 0.2s;
+  }
+  .quick-actions__buttons button:hover {
+    border-color: var(--color-primary);
+  }
+
+  .widget-footer {
+    padding: 17px 24px;
+    background-color: var(--color-bg-footer);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .footer__status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-subtle);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-active);
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  .footer__help-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .footer__help-btn:hover {
+    text-decoration: underline;
+  }
+  </style>
+  <script src="global.js" defer></script>
+</head>
+<body>
+<div class="accessibility-widget">
+  <header class="widget-header">
+    <div class="widget-header__content">
+      <div class="widget-header__icon-wrapper">
+        <img src="images/31_1325.svg" alt="Accessibility Icon">
+      </div>
+      <div class="widget-header__text">
+        <h1>Accessibility Tools</h1>
+        <p>Công cụ hỗ trợ truy cập</p>
+      </div>
+    </div>
+    <button class="widget-header__settings-btn" aria-label="Settings">
+      <img src="images/31_1307.svg" alt="Settings Icon">
+    </button>
+  </header>
+
+  <main class="widget-main">
+    <section id="contrast-mode" class="widget-section">
+      <div class="widget-section__header">
+        <div class="widget-section__icon-wrapper" style="background-color: var(--color-icon-bg-1);">
+          <img src="images/31_1392.svg" alt="Contrast Icon">
+        </div>
+        <div class="widget-section__text">
+          <h2>Chế độ Tương phản</h2>
+          <p>Tăng độ tương phản màu sắc</p>
+        </div>
+      </div>
+      <div class="widget-section__content">
+        <div class="toggle-control">
+          <div class="toggle-control__text">
+            <label for="high-contrast-toggle">Tương phản cao</label>
+            <p>Đảo ngược màu sắc trang web</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="high-contrast-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="info-notice">
+          <img src="images/31_1398.svg" alt="Info Icon">
+          <p>Áp dụng bộ lọc: invert(1) hue-rotate(180deg)</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="font-adjustment" class="widget-section">
+      <div class="widget-section__header">
+        <div class="widget-section__icon-wrapper" style="background-color: var(--color-icon-bg-2);">
+          <img src="images/31_1401.svg" alt="Font Adjustment Icon">
+        </div>
+        <div class="widget-section__text">
+          <h2>Điều chỉnh Phông chữ</h2>
+          <p>Thay đổi kích thước văn bản</p>
+        </div>
+      </div>
+      <div class="widget-section__content">
+        <div class="font-size-header">
+          <label for="font-size-slider">Kích thước phông chữ</label>
+          <span class="font-size-value">100%</span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="font-size-slider" min="80" max="200" value="100" class="font-slider">
+        </div>
+        <div class="slider-labels">
+          <div class="slider-label-start">
+            <img src="images/31_1374.svg" alt="Small font icon">
+            <span>80%</span>
+          </div>
+          <div class="slider-label-end">
+            <img src="images/31_1379.svg" alt="Large font icon">
+            <span>200%</span>
+          </div>
+        </div>
+        <p class="font-preview">Đây là văn bản mẫu để xem trước thay đổi kích thước phông chữ của bạn.</p>
+      </div>
+    </section>
+
+    <section id="quick-actions" class="widget-section">
+      <h3 class="quick-actions__title">
+        <img src="images/31_1296.svg" alt="" class="quick-actions__title-icon">
+        Hành động nhanh
+      </h3>
+      <div class="quick-actions__buttons">
+        <button>
+          <img src="images/31_1382.svg" alt="Reset Icon">
+          <span>Đặt lại</span>
+        </button>
+        <button>
+          <img src="images/31_1387.svg" alt="Save Icon">
+          <span>Lưu cài đặt</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="widget-footer">
+    <div class="footer__status">
+      <span class="status-dot"></span>
+      <span>Đang hoạt động</span>
+    </div>
+    <button class="footer__help-btn">
+      <img src="images/31_1346.svg" alt="Help Icon">
+      <span>Trợ giúp</span>
+    </button>
+  </footer>
+</div>
+</body>
+</html>
