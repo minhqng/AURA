@@ -26,7 +26,7 @@ body {
 /* 1. HEADER */
 .app-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   background: linear-gradient(90deg, var(--primary-color) 0%, #2575fc 100%);
   color: white;
@@ -35,7 +35,7 @@ body {
 .header-title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
 }
 .header-icon {
   width: 32px;
@@ -70,9 +70,11 @@ body {
   background: var(--card-bg);
   border-radius: 12px;
   margin: 16px;
-  margin-top: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+}
+.card:first-of-type {
+  margin-top: 16px;
 }
 .card-header {
   display: flex;
@@ -98,6 +100,7 @@ body {
 }
 .card-title strong {
   font-weight: 600;
+  font-size: 1.05em;
 }
 .card-title span {
   font-size: 0.85em;
@@ -280,7 +283,7 @@ input[type="range"]::-moz-range-thumb {
   height: 16px;
 }
 
-/* Hide the info box (purple note) as requested */
+/* Info box visible as per new design */
 .info-box {
-  display: none !important;
+  display: flex !important;
 }
