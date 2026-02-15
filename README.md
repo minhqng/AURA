@@ -67,7 +67,6 @@ AURA/
 - **Content Script**: Inject vào tất cả trang web để áp dụng accessibility
 - **Storage API**: Đồng bộ cài đặt người dùng qua các tab
 - **Gemini AI**: Mô tả hình ảnh bằng tiếng Việt
-- **TTS API**: Text-to-speech cho người khiếm thị
 
 ## 📝 Development
 
