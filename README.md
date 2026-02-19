@@ -61,7 +61,7 @@ AURA/
 │       └── engine.css   # CSS rules cho accessibility
 ```
 
-## 🔧 Kỹ thuật
+## Kỹ thuật
 
 - **Manifest V3**: Chrome Extension phiên bản mới nhất
 - **Content Script**: Inject vào tất cả trang web để áp dụng accessibility
