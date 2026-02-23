@@ -41,7 +41,7 @@ cp src/config.example.js src/config.js
 3. Kéo slider **Phóng chữ** để điều chỉnh kích thước văn bản
 4. Các thay đổi được áp dụng ngay lập tức và lưu tự động
 
-## 🏗️ Cấu trúc dự án
+## Cấu trúc dự án
 
 ```
 AURA/
