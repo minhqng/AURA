@@ -34,7 +34,7 @@ cp src/config.example.js src/config.js
 3. Click **Load unpacked**
 4. Chọn thư mục `AURA`
 
-## 🎯 Sử dụng
+## Sử dụng
 
 1. Click vào icon extension trên thanh công cụ trình duyệt
 2. Bật/tắt **Tương phản cao** bằng toggle switch
