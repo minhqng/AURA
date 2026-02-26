@@ -8,7 +8,7 @@ NCKH: Tiện ích mở rộng (middleware) dùng AI chuyển đổi nội dung w
 - **Phóng chữ**: Điều chỉnh kích thước văn bản từ 80% - 200%
 - **AI mô tả ảnh**: Sử dụng Gemini AI để mô tả hình ảnh cho người khiếm thị (tích hợp sẵn)
 
-## 📦 Cài đặt
+## Cài đặt
 
 ### 1. Clone repository
 
