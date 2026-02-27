@@ -2,7 +2,7 @@
 
 NCKH: Tiện ích mở rộng (middleware) dùng AI chuyển đổi nội dung web, hỗ trợ người khiếm thị tiếp cận thông tin.
 
-## 🚀 Tính năng
+## Tính năng
 
 - **Tương phản cao**: Đảo ngược màu sắc trang web (invert + hue-rotate) với xử lý ngoại lệ cho ảnh/video
 - **Phóng chữ**: Điều chỉnh kích thước văn bản từ 80% - 200%
