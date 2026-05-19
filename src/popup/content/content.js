@@ -104,31 +104,34 @@
       if (!isNaN(scale)) applyStyles({ fontSize: scale });
     }
   });
-})();
 
-// Lắng nghe thay đổi từ popup
-// For compatibility, accept message-based commands but do not rely on them
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (!request || !request.type) return;
-  switch (request.type) {
-    case "CHANGE_FONT_SIZE":
-      if (request.payload && request.payload.scale != null) {
-        applyStyles({ fontSize: request.payload.scale });
-      }
-      sendResponse({ ok: true });
-      break;
-    case "TOGGLE_CONTRAST":
-      if (request.payload && request.payload.isEnabled != null) {
-        applyStyles({
-          contrastMode: request.payload.isEnabled ? "high" : "none",
-        });
-      }
-      sendResponse({ ok: true });
-      break;
-    default:
-      break;
-  }
-});
+  // Message-based commands from popup
+  chrome.runtime.onMessage.addListener(function (
+    request,
+    sender,
+    sendResponse
+  ) {
+    if (!request || !request.type) return;
+    switch (request.type) {
+      case "CHANGE_FONT_SIZE":
+        if (request.payload && request.payload.scale != null) {
+          applyStyles({ fontSize: request.payload.scale });
+        }
+        sendResponse({ ok: true });
+        break;
+      case "TOGGLE_CONTRAST":
+        if (request.payload && request.payload.isEnabled != null) {
+          applyStyles({
+            contrastMode: request.payload.isEnabled ? "high" : "none",
+          });
+        }
+        sendResponse({ ok: true });
+        break;
+      default:
+        break;
+    }
+  });
+})();
 
 // Keep the original root font-size as base so scale is deterministic
 // Maintain compatibility helper: setting root font-size directly

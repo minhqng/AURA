@@ -100,6 +100,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === "GET_AI_DESCRIPTION") {
+    if (!message.imageUrl) {
+      sendResponse({ status: "error", message: "Thiếu URL ảnh." });
+      return;
+    }
     fetchAIDescription(message.imageUrl).then((result) => {
       sendResponse(result);
     });
