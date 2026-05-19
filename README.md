@@ -51,16 +51,16 @@ AURA/
 │   ├── config.js             # API key configuration (gitignored)
 │   ├── config.example.js     # Template cấu hình
 │   ├── background/
-│   │   └── background.js     # Service worker (AI features)
+│   │   └── background.js     # Service worker (AI features, TTS)
 │   ├── content-scripts/
-│   │   └── content-script.js # AI auto-scan (mô tả ảnh tự động)
+│   │   └── content-script.js # AI auto-scan: tìm ảnh thiếu alt text
 │   └── popup/
 │       ├── popup.html        # Giao diện popup
 │       ├── popup.css         # Style popup
 │       ├── popup.js          # Logic popup
-│       ├── engine.css        # CSS rules cho accessibility
+│       ├── engine.css        # CSS rules cho accessibility (injected vào mọi trang)
 │       └── content/
-│           └── content.js    # Content script (contrast + font)
+│           └── content.js    # Content script chính (contrast + font)
 ```
 
 ## Kỹ thuật
