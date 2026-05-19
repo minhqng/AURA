@@ -193,7 +193,11 @@ async function checkAIStatus(retries) {
   for (let i = 0; i < retries; i++) {
     try {
       const status = await chrome.runtime.sendMessage({ type: 'CHECK_AI_STATUS' });
-      return status && status.configured;
+      if (status && status.configured) return true;
+      // Background may still be loading config — retry after a delay
+      if (i < retries - 1) {
+        await new Promise(r => setTimeout(r, 500 * (i + 1)));
+      }
     } catch (e) {
       if (i < retries - 1) {
         await new Promise(r => setTimeout(r, 500 * (i + 1)));
