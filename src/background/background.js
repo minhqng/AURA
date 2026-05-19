@@ -22,29 +22,40 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || !message.type) return;
 
   if (message.type === "CHECK_AI_AVAILABLE") {
-    configReady.then(() => {
-      sendResponse({
-        available: !!GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_API_KEY_HERE",
+    configReady
+      .then(() => {
+        sendResponse({
+          available: !!GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_API_KEY_HERE",
+        });
+      })
+      .catch(() => {
+        sendResponse({ available: false });
       });
-    });
     return true;
   }
 
   if (message.type === "GET_AI_DESCRIPTION") {
-    configReady.then(() => {
-      fetchAIDescription(message.imageUrl).then((result) => {
+    configReady
+      .then(() => fetchAIDescription(message.imageUrl))
+      .then((result) => {
         sendResponse(result);
+      })
+      .catch((err) => {
+        sendResponse({ status: "error", message: err.message || "Lỗi không xác định" });
       });
-    });
     return true;
   }
 
   if (message.type === "SPEAK_TEXT") {
-    chrome.tts.stop();
-    chrome.tts.speak(message.text, {
-      lang: "vi-VN",
-      rate: 1.0,
-    });
+    try {
+      chrome.tts.stop();
+      chrome.tts.speak(message.text, {
+        lang: "vi-VN",
+        rate: 1.0,
+      });
+    } catch (e) {
+      console.error("AURA: TTS error", e);
+    }
   }
 });
 

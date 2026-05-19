@@ -27,6 +27,8 @@ function isTooSmall(img) {
 
 // --- 2. HÀM XỬ LÝ CHÍNH & UI PHẢN HỒI ---
 async function processSingleImage(img) {
+  if (!chrome.runtime || !chrome.runtime.id) return;
+
   if (img.dataset.aiStatus === 'processing' || img.dataset.aiStatus === 'done') {
     return;
   }
