@@ -81,15 +81,18 @@ function setupMutationObserver() {
 }
 
 // --- 4. KHỞI CHẠY ---
-chrome.runtime.sendMessage({ type: 'CHECK_AI_AVAILABLE' }, function(response) {
-  if (chrome.runtime.lastError) {
-    return;
-  }
-  if (!response || !response.available) {
-    return;
-  }
+// Guard: after an extension update the old content script's APIs are invalid.
+if (chrome.runtime && chrome.runtime.id) {
+  chrome.runtime.sendMessage({ type: 'CHECK_AI_AVAILABLE' }, function(response) {
+    if (chrome.runtime.lastError) {
+      return;
+    }
+    if (!response || !response.available) {
+      return;
+    }
 
-  var initialImages = document.querySelectorAll('img');
-  initialImages.forEach(processSingleImage);
-  setupMutationObserver();
-});
+    var initialImages = document.querySelectorAll('img');
+    initialImages.forEach(processSingleImage);
+    setupMutationObserver();
+  });
+}

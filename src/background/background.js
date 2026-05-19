@@ -2,15 +2,49 @@ let GEMINI_API_KEY = "";
 let GEMINI_API_URL =
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
-try {
-  const config = await import("../config.js");
-  GEMINI_API_KEY = config.GEMINI_API_KEY || "";
-  GEMINI_API_URL = config.GEMINI_API_URL || GEMINI_API_URL;
-} catch (e) {
-  console.warn(
-    "AURA: config.js not found. AI features disabled until API key is configured."
-  );
-}
+// Promise that resolves once config.js has been loaded (or failed).
+// Used by CHECK_AI_AVAILABLE to avoid a stale answer during cold start.
+const configReady = (async () => {
+  try {
+    const config = await import("../config.js");
+    GEMINI_API_KEY = config.GEMINI_API_KEY || "";
+    GEMINI_API_URL = config.GEMINI_API_URL || GEMINI_API_URL;
+  } catch (e) {
+    console.warn(
+      "AURA: config.js not found. AI features disabled until API key is configured."
+    );
+  }
+})();
+
+// Register the listener synchronously — before any top-level await — so the
+// service worker never misses an event during a cold start.
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "CHECK_AI_AVAILABLE") {
+    configReady.then(() => {
+      sendResponse({
+        available: !!GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_API_KEY_HERE",
+      });
+    });
+    return true;
+  }
+
+  if (message.type === "GET_AI_DESCRIPTION") {
+    configReady.then(() => {
+      fetchAIDescription(message.imageUrl).then((result) => {
+        sendResponse(result);
+      });
+    });
+    return true;
+  }
+
+  if (message.type === "SPEAK_TEXT") {
+    chrome.tts.stop();
+    chrome.tts.speak(message.text, {
+      lang: "vi-VN",
+      rate: 1.0,
+    });
+  }
+});
 
 async function imageUrlToBase64(url) {
   try {
@@ -98,27 +132,3 @@ async function fetchAIDescription(imageUrl) {
     return { status: "error", message: error.message };
   }
 }
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "CHECK_AI_AVAILABLE") {
-    sendResponse({
-      available: !!GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_API_KEY_HERE",
-    });
-    return;
-  }
-
-  if (message.type === "GET_AI_DESCRIPTION") {
-    fetchAIDescription(message.imageUrl).then((result) => {
-      sendResponse(result);
-    });
-    return true;
-  }
-
-  if (message.type === "SPEAK_TEXT") {
-    chrome.tts.stop();
-    chrome.tts.speak(message.text, {
-      lang: "vi-VN",
-      rate: 1.0,
-    });
-  }
-});

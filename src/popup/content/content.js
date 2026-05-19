@@ -77,11 +77,16 @@
     }
   }
 
+  // Guard: after an extension update the old content script's chrome APIs
+  // throw. Bail out silently so the page isn't broken by stale scripts.
+  if (!chrome.runtime || !chrome.runtime.id) return;
+
   // On initial load, read userConfig (preferred) or fallback to auraSettings.
   // Also accept the simple keys `isContrastOn` and `fontSize` saved by popup.
   chrome.storage.sync.get(
     ["userConfig", "auraSettings", "isContrastOn", "fontSize"],
     function (res) {
+      if (chrome.runtime.lastError) return;
       var cfg = null;
       if (res && res.userConfig) cfg = res.userConfig;
       else if (res && res.auraSettings) cfg = res.auraSettings;
