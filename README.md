@@ -4,7 +4,7 @@ NCKH: Tiện ích mở rộng (middleware) dùng AI chuyển đổi nội dung w
 
 ## Tính năng
 
-- **Tương phản cao**: Đảo ngược màu sắc trang web (invert + hue-rotate) với xử lý ngoại lệ cho ảnh/video
+- **Tương phản cao**: Nền đen với chữ vàng, giúp tăng độ tương phản. Ảnh/video/canvas/SVG không bị ảnh hưởng
 - **Phóng chữ**: Điều chỉnh kích thước văn bản từ 80% - 200%
 - **AI mô tả ảnh**: Sử dụng Gemini AI để mô tả hình ảnh cho người khiếm thị (tích hợp sẵn)
 
