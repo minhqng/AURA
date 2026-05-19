@@ -83,7 +83,17 @@ async function processSingleImage(img) {
   if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) return;
 
   // Skip invisible or tiny images (e.g. tracking pixels)
-  if (!isImageVisible(img)) return;
+  if (!isImageVisible(img)) {
+    // Image may still be loading — retry once it finishes
+    if (!img.complete && !img.dataset.aiLoadRetry) {
+      img.dataset.aiLoadRetry = 'pending';
+      img.addEventListener('load', () => {
+        delete img.dataset.aiLoadRetry;
+        processSingleImage(img).catch(() => {});
+      }, { once: true });
+    }
+    return;
+  }
 
   img.dataset.aiStatus = 'processing';
   img.style.border = '4px dashed #f1c40f'; // Màu vàng
