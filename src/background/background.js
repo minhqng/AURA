@@ -22,6 +22,9 @@ async function imageUrlToBase64(url) {
     }
     const blob = await response.blob();
     const mimeType = blob.type || "image/jpeg";
+    if (!mimeType.startsWith("image/")) {
+      throw new Error(`Không phải ảnh (${mimeType})`);
+    }
 
     const base64String = await new Promise((resolve, reject) => {
       const reader = new FileReader();

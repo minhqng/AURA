@@ -8,7 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Load saved settings (use defaults if none)
   chrome.storage.sync.get({ isContrastOn: false, fontSize: 100 }, (res) => {
-    if (chrome.runtime.lastError) return;
+    if (chrome.runtime.lastError) {
+      console.warn("Storage read failed:", chrome.runtime.lastError.message);
+      return;
+    }
     contrastToggle.checked = !!res.isContrastOn;
     fontSlider.value = res.fontSize != null ? res.fontSize : 100;
     updateFontDisplay(fontSlider.value);

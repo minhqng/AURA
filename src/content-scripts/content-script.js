@@ -52,6 +52,7 @@ function isImageVisible(img) {
   if (img.naturalWidth > 0 && img.naturalWidth <= 2 && img.naturalHeight <= 2) return false;
   const style = window.getComputedStyle(img);
   if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+  if (img.offsetWidth === 0 && img.offsetHeight === 0) return false;
   return true;
 }
 
@@ -64,10 +65,10 @@ async function processSingleImage(img) {
 
   if (!isImageMissingAlt(img)) return;
 
-  // Skip images without a valid HTTP(S) src
-  const src = img.getAttribute('src');
-  if (!src || src.trim() === '') return;
-  if (!img.src.startsWith('http://') && !img.src.startsWith('https://')) return;
+  // Skip images without a valid HTTP(S) src (use currentSrc for responsive images)
+  const resolvedSrc = img.currentSrc || img.src;
+  if (!resolvedSrc || resolvedSrc.trim() === '') return;
+  if (!resolvedSrc.startsWith('http://') && !resolvedSrc.startsWith('https://')) return;
 
   // Skip invisible or tiny images (e.g. tracking pixels)
   if (!isImageVisible(img)) return;
@@ -80,20 +81,21 @@ async function processSingleImage(img) {
 
   try {
     let response;
-    const cached = descriptionCache.get(img.src);
+    const imageUrl = img.currentSrc || img.src;
+    const cached = descriptionCache.get(imageUrl);
     if (cached) {
       response = cached;
     } else {
       response = await enqueue(() => chrome.runtime.sendMessage({
         type: 'GET_AI_DESCRIPTION',
-        imageUrl: img.src
+        imageUrl: imageUrl
       }));
       if (response && response.status === 'success') {
         if (descriptionCache.size >= MAX_CACHE_SIZE) {
           const firstKey = descriptionCache.keys().next().value;
           descriptionCache.delete(firstKey);
         }
-        descriptionCache.set(img.src, response);
+        descriptionCache.set(imageUrl, response);
       }
     }
 
