@@ -1,16 +1,6 @@
 let GEMINI_API_KEY = "";
 let GEMINI_API_URL = "";
 
-try {
-  const config = await import("../config.js");
-  GEMINI_API_KEY = config.GEMINI_API_KEY || "";
-  GEMINI_API_URL = config.GEMINI_API_URL || "";
-} catch (e) {
-  console.warn(
-    "config.js not found — AI features disabled. Copy config.example.js to config.js and add your API key."
-  );
-}
-
 const GLOBAL_MAX_CONCURRENT = 5;
 let globalActive = 0;
 const globalQueue = [];
@@ -125,6 +115,9 @@ async function fetchAIDescription(imageUrl) {
   }
 }
 
+// Register listener synchronously (before any await) so Chrome knows to
+// wake the service worker for message events. Handler functions read the
+// config variables at call time, after the async import below has completed.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || !message.type) return;
 
@@ -167,3 +160,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
   }
 });
+
+// Load API config asynchronously — if config.js is missing, AI features
+// stay disabled but the service worker still runs for TTS and other features.
+try {
+  const config = await import("../config.js");
+  GEMINI_API_KEY = config.GEMINI_API_KEY || "";
+  GEMINI_API_URL = config.GEMINI_API_URL || "";
+} catch (e) {
+  console.warn(
+    "config.js not found — AI features disabled. Copy config.example.js to config.js and add your API key."
+  );
+}
