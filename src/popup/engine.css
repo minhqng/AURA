@@ -50,7 +50,7 @@
   outline: 2px dashed #ffff00 !important;
 }
 
-/* Smaller helpers */
-[data-a11y-contrast="none"] * {
+/* Reset only AURA-applied filters when contrast is off */
+[data-a11y-contrast="none"] {
   filter: none !important;
 }

@@ -1,4 +1,16 @@
-import { GEMINI_API_KEY, GEMINI_API_URL } from "../config.js";
+let GEMINI_API_KEY = "";
+let GEMINI_API_URL = "";
+
+try {
+  const config = await import("../config.js");
+  GEMINI_API_KEY = config.GEMINI_API_KEY || "";
+  GEMINI_API_URL = config.GEMINI_API_URL || "";
+} catch (e) {
+  console.warn(
+    "config.js not found — AI features disabled. Copy config.example.js to config.js and add your API key."
+  );
+}
+
 async function imageUrlToBase64(url) {
   try {
     const response = await fetch(url);
@@ -20,6 +32,13 @@ async function imageUrlToBase64(url) {
 }
 
 async function fetchAIDescription(imageUrl) {
+  if (!GEMINI_API_KEY || !GEMINI_API_URL) {
+    return {
+      status: "error",
+      message: "API key chưa được cấu hình. Xem config.example.js",
+    };
+  }
+
   try {
     const base64Image = await imageUrlToBase64(imageUrl);
 

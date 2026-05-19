@@ -126,7 +126,7 @@ html.a11y-inverted img, html.a11y-inverted video, html.a11y-inverted video * {
       }
       if (changes.userConfig && changes.userConfig.newValue) {
         var cfg = changes.userConfig.newValue;
-        if (cfg.contrastMode)
+        if (cfg.contrastMode != null)
           enableContrast(String(cfg.contrastMode) !== "none");
         if (typeof cfg.fontSize !== "undefined") setFontScale(cfg.fontSize);
       }

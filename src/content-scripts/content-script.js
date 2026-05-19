@@ -21,6 +21,11 @@ async function processSingleImage(img) {
 
   if (!isImageMissingAlt(img)) return;
 
+  // Skip images without a valid HTTP(S) src
+  var src = img.getAttribute('src');
+  if (!src || src.trim() === '') return;
+  if (!img.src.startsWith('http://') && !img.src.startsWith('https://')) return;
+
   img.dataset.aiStatus = 'processing';
   img.style.border = '4px dashed #f1c40f'; // Màu vàng
   img.style.transition = 'border 0.3s';
