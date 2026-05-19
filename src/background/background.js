@@ -89,6 +89,8 @@ async function fetchAIDescription(imageUrl) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || !message.type) return;
+
   if (message.type === "CHECK_AI_STATUS") {
     sendResponse({ configured: !!(GEMINI_API_KEY && GEMINI_API_URL) });
     return;
