@@ -134,6 +134,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       chrome.tts.speak(message.text, {
         lang: "vi-VN",
         rate: 1.0,
+      }, () => {
+        if (chrome.runtime.lastError) {
+          console.warn("TTS error:", chrome.runtime.lastError.message);
+        }
       });
     }
   }

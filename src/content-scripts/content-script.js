@@ -2,6 +2,7 @@ console.log("Bắt đầu");
 console.log(`=== Chạy tại ${window.location.href} ===`);
 
 const MAX_CONCURRENT = 3;
+const MAX_CACHE_SIZE = 200;
 let activeRequests = 0;
 const pendingQueue = [];
 const descriptionCache = new Map();
@@ -86,6 +87,10 @@ async function processSingleImage(img) {
         imageUrl: img.src
       }));
       if (response && response.status === 'success') {
+        if (descriptionCache.size >= MAX_CACHE_SIZE) {
+          const firstKey = descriptionCache.keys().next().value;
+          descriptionCache.delete(firstKey);
+        }
         descriptionCache.set(img.src, response);
       }
     }
@@ -116,11 +121,11 @@ function setupMutationObserver() {
       if (mutation.type === 'childList') {
         mutation.addedNodes.forEach(node => {
           if (node.nodeName === 'IMG') {
-            processSingleImage(node);
+            processSingleImage(node).catch(() => {});
           }
           else if (node.querySelectorAll) {
             const imgs = node.querySelectorAll('img');
-            imgs.forEach(processSingleImage);
+            imgs.forEach(img => processSingleImage(img).catch(() => {}));
           }
         });
       }
@@ -132,7 +137,7 @@ function setupMutationObserver() {
       if (m.type === 'attributes' && m.target.nodeName === 'IMG') {
         const img = m.target;
         if (img.dataset.aiStatus) continue;
-        processSingleImage(img);
+        processSingleImage(img).catch(() => {});
       }
     }
   });
@@ -171,7 +176,7 @@ async function checkAIStatus(retries) {
 
   const initialImages = document.querySelectorAll('img');
   console.log(`Tìm thấy ${initialImages.length} ảnh.`);
-  initialImages.forEach(processSingleImage);
+  initialImages.forEach(img => processSingleImage(img).catch(() => {}));
 
   setupMutationObserver();
 })();

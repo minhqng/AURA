@@ -274,6 +274,11 @@ input[type="range"]::-moz-range-thumb {
   color: var(--text-secondary);
   text-decoration: none;
   font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
 }
 .help-link svg {
   width: 16px;

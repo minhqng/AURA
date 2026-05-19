@@ -4,14 +4,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const fontSizeValue = document.getElementById("font-size-value");
   const previewText = document.getElementById("preview-text");
 
+  if (!contrastToggle || !fontSlider || !fontSizeValue) return;
+
   // Load saved settings (use defaults if none)
   chrome.storage.sync.get({ isContrastOn: false, fontSize: 100 }, (res) => {
+    if (chrome.runtime.lastError) return;
     contrastToggle.checked = !!res.isContrastOn;
-    fontSlider.value = res.fontSize || 100;
+    fontSlider.value = res.fontSize != null ? res.fontSize : 100;
     updateFontDisplay(fontSlider.value);
   });
 
-  // Update preview display
   function updateFontDisplay(size) {
     fontSizeValue.textContent = `${size}%`;
     if (previewText) previewText.style.fontSize = `${size}%`;
