@@ -12,11 +12,19 @@ function isImageMissingAlt(img) {
   return invalidExtensions.some(ext => lowerAlt.endsWith(ext));
 }
 
-// --- 1b. MINIMUM SIZE FILTER ---
-function isImageTooSmall(img) {
+// --- 1b. KIỂM TRA SRC HỢP LỆ ---
+function hasValidSrc(img) {
+  var src = img.src;
+  if (!src || src === '' || src === window.location.href) return false;
+  if (src.startsWith('data:') || src.startsWith('blob:')) return false;
+  return true;
+}
+
+// --- 1c. KIỂM TRA KÍCH THƯỚC TỐI THIỂU ---
+function isTooSmall(img) {
   var w = img.naturalWidth || img.width;
   var h = img.naturalHeight || img.height;
-  return w < 50 || h < 50;
+  return (w > 0 && w < 50) || (h > 0 && h < 50);
 }
 
 // --- 2. HÀM XỬ LÝ CHÍNH & UI PHẢN HỒI ---
@@ -27,13 +35,8 @@ async function processSingleImage(img) {
   }
 
   if (!isImageMissingAlt(img)) return;
-
-  // Skip images with empty, data:, or blob: src (can't be fetched by service worker)
-  var src = (img.src || '').trim();
-  if (!src || src.startsWith('data:') || src.startsWith('blob:')) return;
-
-  // Skip tiny images (tracking pixels, spacer GIFs, small icons)
-  if (isImageTooSmall(img)) return;
+  if (!hasValidSrc(img)) return;
+  if (isTooSmall(img)) return;
 
   img.dataset.aiStatus = 'processing';
   img.style.border = '4px dashed #f1c40f'; // Màu vàng

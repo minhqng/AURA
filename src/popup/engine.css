@@ -36,7 +36,10 @@
   filter: invert(100%) hue-rotate(180deg) !important;
 }
 [data-a11y-contrast="inverted"] img,
-[data-a11y-contrast="inverted"] video {
+[data-a11y-contrast="inverted"] video,
+[data-a11y-contrast="inverted"] canvas,
+[data-a11y-contrast="inverted"] svg,
+[data-a11y-contrast="inverted"] picture {
   filter: invert(100%) hue-rotate(180deg) !important;
 }
 
