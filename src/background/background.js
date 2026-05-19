@@ -99,9 +99,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: "error", message: "Thiếu URL ảnh." });
       return;
     }
-    fetchAIDescription(message.imageUrl).then((result) => {
-      sendResponse(result);
-    });
+    fetchAIDescription(message.imageUrl)
+      .then((result) => {
+        sendResponse(result);
+      })
+      .catch((err) => {
+        console.error("GET_AI_DESCRIPTION handler error:", err);
+        try {
+          sendResponse({ status: "error", message: err.message });
+        } catch (_) {
+          // Port closed — ignore
+        }
+      });
     return true;
   }
 
