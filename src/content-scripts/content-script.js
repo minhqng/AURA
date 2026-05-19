@@ -3,6 +3,7 @@ console.log(`=== Chạy tại ${window.location.href} ===`);
 
 const MAX_CONCURRENT = 3;
 const MAX_CACHE_SIZE = 200;
+const REQUEST_TIMEOUT_MS = 60000;
 let activeRequests = 0;
 const pendingQueue = [];
 const descriptionCache = new Map();
@@ -11,7 +12,13 @@ function enqueue(fn) {
   return new Promise((resolve, reject) => {
     const run = () => {
       activeRequests++;
-      fn().then(resolve, reject).finally(() => {
+      const timer = setTimeout(() => {
+        reject(new Error('Yêu cầu AI hết thời gian chờ'));
+      }, REQUEST_TIMEOUT_MS);
+      fn().then(
+        (v) => { clearTimeout(timer); resolve(v); },
+        (e) => { clearTimeout(timer); reject(e); }
+      ).finally(() => {
         activeRequests--;
         if (pendingQueue.length > 0) pendingQueue.shift()();
       });
