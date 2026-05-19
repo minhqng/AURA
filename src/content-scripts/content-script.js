@@ -84,7 +84,7 @@ async function processSingleImage(img) {
   img.style.border = '4px dashed #f1c40f'; // Màu vàng
   img.style.transition = 'border 0.3s';
   
-  console.log(`[Gửi đi] Yêu cầu Lâm phân tích ảnh: ${imageUrl.slice(0, 60)}...`);
+  console.log(`[Gửi đi] Yêu cầu AI phân tích ảnh: ${imageUrl.slice(0, 60)}...`);
 
   try {
     let response;
