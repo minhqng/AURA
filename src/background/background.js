@@ -87,6 +87,13 @@ async function fetchAIDescription(imageUrl) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "CHECK_AI_AVAILABLE") {
+    sendResponse({
+      available: !!GEMINI_API_KEY && GEMINI_API_KEY !== "YOUR_API_KEY_HERE",
+    });
+    return;
+  }
+
   if (message.type === "GET_AI_DESCRIPTION") {
     fetchAIDescription(message.imageUrl).then((result) => {
       sendResponse(result);

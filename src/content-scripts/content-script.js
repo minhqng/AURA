@@ -79,8 +79,15 @@ function setupMutationObserver() {
 }
 
 // --- 4. KHỞI CHẠY ---
-const initialImages = document.querySelectorAll('img');
-console.log(`Tìm thấy ${initialImages.length} ảnh.`);
-initialImages.forEach(processSingleImage);
+chrome.runtime.sendMessage({ type: 'CHECK_AI_AVAILABLE' }, function(response) {
+  if (!response || !response.available) {
+    console.log("AURA: AI chưa được cấu hình. Bỏ qua quét ảnh tự động.");
+    return;
+  }
 
-setupMutationObserver();
+  const initialImages = document.querySelectorAll('img');
+  console.log(`Tìm thấy ${initialImages.length} ảnh.`);
+  initialImages.forEach(processSingleImage);
+
+  setupMutationObserver();
+});
