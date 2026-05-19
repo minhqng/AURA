@@ -22,7 +22,7 @@ async function processSingleImage(img) {
   if (!isImageMissingAlt(img)) return;
 
   // Skip images without a valid HTTP(S) src
-  var src = img.getAttribute('src');
+  const src = img.getAttribute('src');
   if (!src || src.trim() === '') return;
   if (!img.src.startsWith('http://') && !img.src.startsWith('https://')) return;
 
@@ -84,8 +84,23 @@ function setupMutationObserver() {
 }
 
 // --- 4. KHỞI CHẠY ---
-const initialImages = document.querySelectorAll('img');
-console.log(`Tìm thấy ${initialImages.length} ảnh.`);
-initialImages.forEach(processSingleImage);
+(async function init() {
+  let aiAvailable = false;
+  try {
+    const status = await chrome.runtime.sendMessage({ type: 'CHECK_AI_STATUS' });
+    aiAvailable = status && status.configured;
+  } catch (e) {
+    console.warn('[AI Scanner] Không thể kiểm tra trạng thái AI:', e);
+  }
 
-setupMutationObserver();
+  if (!aiAvailable) {
+    console.log('[AI Scanner] AI chưa được cấu hình. Scanner đã tắt.');
+    return;
+  }
+
+  const initialImages = document.querySelectorAll('img');
+  console.log(`Tìm thấy ${initialImages.length} ảnh.`);
+  initialImages.forEach(processSingleImage);
+
+  setupMutationObserver();
+})();

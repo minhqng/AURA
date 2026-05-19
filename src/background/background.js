@@ -87,6 +87,11 @@ async function fetchAIDescription(imageUrl) {
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "CHECK_AI_STATUS") {
+    sendResponse({ configured: !!(GEMINI_API_KEY && GEMINI_API_URL) });
+    return;
+  }
+
   if (message.type === "GET_AI_DESCRIPTION") {
     fetchAIDescription(message.imageUrl).then((result) => {
       sendResponse(result);
@@ -95,10 +100,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 
   if (message.type === "SPEAK_TEXT") {
-    chrome.tts.stop();
-    chrome.tts.speak(message.text, {
-      lang: "vi-VN",
-      rate: 1.0,
-    });
+    if (message.text) {
+      chrome.tts.stop();
+      chrome.tts.speak(message.text, {
+        lang: "vi-VN",
+        rate: 1.0,
+      });
+    }
   }
 });
