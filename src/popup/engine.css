@@ -5,13 +5,10 @@
 */
 
 /* Contrast modes */
-[data-a11y-contrast="high"] * {
+[data-a11y-contrast="high"] *:not(img):not(video):not(picture):not(canvas):not(svg) {
   background-color: #000 !important;
   color: #ffff00 !important;
   border-color: #ffff00 !important;
-}
-
-[data-a11y-contrast="high"] *:not(img) {
   background-image: none !important;
 }
 

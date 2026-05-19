@@ -12,8 +12,9 @@
     const css = `html.a11y-inverted { filter: invert(100%) hue-rotate(180deg) !important; }
 /* Re-invert visual media so their colors are preserved */
 html.a11y-inverted img,
-html.a11y-inverted video, html.a11y-inverted video *,
-html.a11y-inverted canvas, html.a11y-inverted svg {
+html.a11y-inverted video,
+html.a11y-inverted picture, html.a11y-inverted canvas, html.a11y-inverted svg,
+html.a11y-inverted object, html.a11y-inverted embed {
   filter: invert(100%) hue-rotate(180deg) !important;
 }
 `;

@@ -5,6 +5,7 @@ const MAX_CONCURRENT = 3;
 const MAX_CACHE_SIZE = 200;
 const REQUEST_TIMEOUT_MS = 60000;
 let activeRequests = 0;
+let extensionInvalidated = false;
 const pendingQueue = [];
 const descriptionCache = new Map();
 
@@ -70,6 +71,8 @@ function isImageVisible(img) {
 
 // --- 2. HÀM XỬ LÝ CHÍNH & UI PHẢN HỒI ---
 async function processSingleImage(img) {
+  if (extensionInvalidated) return;
+
   // A. Kiểm tra cờ để tránh xử lý lại
   if (img.dataset.aiStatus === 'processing' || img.dataset.aiStatus === 'done') {
     return;
@@ -87,10 +90,12 @@ async function processSingleImage(img) {
     // Image may still be loading — retry once it finishes
     if (!img.complete && !img.dataset.aiLoadRetry) {
       img.dataset.aiLoadRetry = 'pending';
+      const cleanup = () => { delete img.dataset.aiLoadRetry; };
       img.addEventListener('load', () => {
-        delete img.dataset.aiLoadRetry;
+        cleanup();
         processSingleImage(img).catch(() => {});
       }, { once: true });
+      img.addEventListener('error', cleanup, { once: true });
     }
     return;
   }
@@ -135,6 +140,12 @@ async function processSingleImage(img) {
     }
 
   } catch (error) {
+    if (error.message && error.message.includes('Extension context invalidated')) {
+      extensionInvalidated = true;
+      img.style.border = '';
+      delete img.dataset.aiStatus;
+      return;
+    }
     console.error("[Lỗi] Không thể lấy mô tả:", error);
     img.style.border = '4px solid #e74c3c'; 
     img.dataset.aiStatus = 'error';
