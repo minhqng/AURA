@@ -20,15 +20,13 @@ async function imageUrlToBase64(url) {
     const blob = await response.blob();
     const mimeType = blob.type || "image/jpeg";
 
-    return new Promise((resolve, reject) => {
+    const base64String = await new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result.split(",")[1];
-        resolve({ base64: base64String, mimeType });
-      };
-      reader.onerror = reject;
+      reader.onloadend = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = () => reject(new Error("FileReader failed"));
       reader.readAsDataURL(blob);
     });
+    return { base64: base64String, mimeType };
   } catch (error) {
     console.error(error);
     throw new Error("Không thể tải ảnh.");
