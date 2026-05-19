@@ -26,31 +26,39 @@
 
     // Font settings: set CSS variables on root.
     // Only modify properties that are present in config.
-    var fontChanged = false;
+    // Track whether any font property is set to a non-default value.
+    var fontActive = false;
+    var fontProvided = false;
     if ("fontSize" in config && config.fontSize != null) {
       var scale = parseFloatOrDefault(config.fontSize, 1.0);
       root.style.setProperty("--user-font-size-scale", String(scale));
-      fontChanged = true;
+      fontProvided = true;
+      if (scale !== 1.0) fontActive = true;
     }
     if ("fontFamily" in config && config.fontFamily) {
       root.style.setProperty("--user-font-family", String(config.fontFamily));
-      fontChanged = true;
+      fontProvided = true;
+      fontActive = true;
     }
     if ("lineHeight" in config && config.lineHeight != null) {
       var lh = parseFloatOrDefault(config.lineHeight, 1.2);
       root.style.setProperty("--user-line-height", String(lh));
-      fontChanged = true;
+      fontProvided = true;
+      if (lh !== 1.2) fontActive = true;
     }
     if ("letterSpacing" in config && config.letterSpacing != null) {
       root.style.setProperty(
         "--user-letter-spacing",
         String(config.letterSpacing) + "px"
       );
-      fontChanged = true;
+      fontProvided = true;
+      if (parseFloatOrDefault(config.letterSpacing, 0) !== 0) fontActive = true;
     }
 
-    if (fontChanged) {
+    if (fontActive) {
       root.setAttribute("data-a11y-font", "true");
+    } else if (fontProvided) {
+      root.removeAttribute("data-a11y-font");
     }
   }
 

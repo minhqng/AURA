@@ -75,8 +75,17 @@ async function fetchAIDescription(imageUrl) {
     const data = await response.json();
 
     if (data.candidates && data.candidates.length > 0) {
-      const description = data.candidates[0].content.parts[0].text;
-      return { status: "success", description: description };
+      const candidate = data.candidates[0];
+      const description =
+        candidate &&
+        candidate.content &&
+        candidate.content.parts &&
+        candidate.content.parts[0] &&
+        candidate.content.parts[0].text;
+      if (description) {
+        return { status: "success", description: description };
+      }
+      return { status: "error", message: "AI trả về phản hồi không hợp lệ." };
     } else {
       return { status: "error", message: "AI không trả về kết quả nào." };
     }

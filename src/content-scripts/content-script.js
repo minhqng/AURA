@@ -80,6 +80,10 @@ function setupMutationObserver() {
 
 // --- 4. KHỞI CHẠY ---
 chrome.runtime.sendMessage({ type: 'CHECK_AI_AVAILABLE' }, function(response) {
+  if (chrome.runtime.lastError) {
+    console.log("AURA: Không thể kết nối service worker.", chrome.runtime.lastError.message);
+    return;
+  }
   if (!response || !response.available) {
     console.log("AURA: AI chưa được cấu hình. Bỏ qua quét ảnh tự động.");
     return;
