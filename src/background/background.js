@@ -30,11 +30,10 @@ function globalEnqueue(fn) {
 }
 
 async function imageUrlToBase64(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
     const response = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeoutId);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
@@ -54,6 +53,8 @@ async function imageUrlToBase64(url) {
   } catch (error) {
     console.error(error);
     throw new Error("Không thể tải ảnh.");
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -89,14 +90,17 @@ async function fetchAIDescription(imageUrl) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
+    let response;
+    try {
+      response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
 
     if (!response.ok) {
       const errorText = await response.text();

@@ -12,16 +12,21 @@ function enqueue(fn) {
   return new Promise((resolve, reject) => {
     const run = () => {
       activeRequests++;
+      let settled = false;
+      function release() {
+        if (settled) return;
+        settled = true;
+        activeRequests--;
+        if (pendingQueue.length > 0) pendingQueue.shift()();
+      }
       const timer = setTimeout(() => {
+        release();
         reject(new Error('Yêu cầu AI hết thời gian chờ'));
       }, REQUEST_TIMEOUT_MS);
       fn().then(
-        (v) => { clearTimeout(timer); resolve(v); },
-        (e) => { clearTimeout(timer); reject(e); }
-      ).finally(() => {
-        activeRequests--;
-        if (pendingQueue.length > 0) pendingQueue.shift()();
-      });
+        (v) => { clearTimeout(timer); release(); resolve(v); },
+        (e) => { clearTimeout(timer); release(); reject(e); }
+      );
     };
     if (activeRequests < MAX_CONCURRENT) run();
     else pendingQueue.push(run);

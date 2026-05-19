@@ -55,6 +55,10 @@
   chrome.storage.sync.get(
     ["userConfig", "auraSettings", "isContrastOn", "fontSize"],
     function (res) {
+      if (chrome.runtime.lastError) {
+        console.warn("Storage read failed:", chrome.runtime.lastError.message);
+        return;
+      }
       var cfg = null;
       if (res && res.userConfig) cfg = res.userConfig;
       else if (res && res.auraSettings) cfg = res.auraSettings;

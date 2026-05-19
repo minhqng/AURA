@@ -278,6 +278,7 @@ input[type="range"]::-moz-range-thumb {
   border: none;
   cursor: pointer;
   padding: 0;
+  font-family: inherit;
   font-size: inherit;
 }
 .help-link svg {
