@@ -25,41 +25,52 @@
     }
 
     // Font settings: set CSS variables on root.
-    // Only modify properties that are present in config.
-    // Track whether any font property is set to a non-default value.
-    var fontActive = false;
-    var fontProvided = false;
+    // Track font-size and font-style (family/height/spacing) separately so
+    // that changing only the font slider does not force system-ui / fixed
+    // line-height on the entire page.
+    var fontSizeActive = false;
+    var fontSizeProvided = false;
+    var fontStyleActive = false;
+    var fontStyleProvided = false;
+
     if ("fontSize" in config && config.fontSize != null) {
       var scale = parseFloatOrDefault(config.fontSize, 1.0);
       root.style.setProperty("--user-font-size-scale", String(scale));
-      fontProvided = true;
-      if (scale !== 1.0) fontActive = true;
+      fontSizeProvided = true;
+      if (scale !== 1.0) fontSizeActive = true;
     }
     if ("fontFamily" in config && config.fontFamily) {
       root.style.setProperty("--user-font-family", String(config.fontFamily));
-      fontProvided = true;
-      fontActive = true;
+      fontStyleProvided = true;
+      fontStyleActive = true;
     }
     if ("lineHeight" in config && config.lineHeight != null) {
       var lh = parseFloatOrDefault(config.lineHeight, 1.2);
       root.style.setProperty("--user-line-height", String(lh));
-      fontProvided = true;
-      if (lh !== 1.2) fontActive = true;
+      fontStyleProvided = true;
+      if (lh !== 1.2) fontStyleActive = true;
     }
     if ("letterSpacing" in config && config.letterSpacing != null) {
       root.style.setProperty(
         "--user-letter-spacing",
         String(config.letterSpacing) + "px"
       );
-      fontProvided = true;
-      if (parseFloatOrDefault(config.letterSpacing, 0) !== 0) fontActive = true;
+      fontStyleProvided = true;
+      if (parseFloatOrDefault(config.letterSpacing, 0) !== 0)
+        fontStyleActive = true;
     }
 
-    if (fontActive) {
+    if (fontSizeActive) {
       root.setAttribute("data-a11y-font", "true");
-    } else if (fontProvided) {
+    } else if (fontSizeProvided) {
       root.removeAttribute("data-a11y-font");
       root.style.removeProperty("--user-font-size-scale");
+    }
+
+    if (fontStyleActive) {
+      root.setAttribute("data-a11y-font-style", "true");
+    } else if (fontStyleProvided) {
+      root.removeAttribute("data-a11y-font-style");
       root.style.removeProperty("--user-font-family");
       root.style.removeProperty("--user-line-height");
       root.style.removeProperty("--user-letter-spacing");

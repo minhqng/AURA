@@ -11,23 +11,11 @@
   border-color: #ffff00 !important;
   background-image: none !important;
 }
-/* Restore natural rendering for elements inside SVGs (path, circle, etc.) */
-[data-a11y-contrast="high"] svg path,
-[data-a11y-contrast="high"] svg circle,
-[data-a11y-contrast="high"] svg rect,
-[data-a11y-contrast="high"] svg line,
-[data-a11y-contrast="high"] svg polyline,
-[data-a11y-contrast="high"] svg polygon,
-[data-a11y-contrast="high"] svg ellipse,
-[data-a11y-contrast="high"] svg text,
-[data-a11y-contrast="high"] svg g,
-[data-a11y-contrast="high"] svg use,
-[data-a11y-contrast="high"] svg defs,
-[data-a11y-contrast="high"] svg symbol,
-[data-a11y-contrast="high"] picture source,
-[data-a11y-contrast="high"] picture img {
+/* Undo high-contrast overrides for all SVG descendants and picture children */
+[data-a11y-contrast="high"] svg *,
+[data-a11y-contrast="high"] picture * {
   background-color: initial !important;
-  color: inherit !important;
+  color: initial !important;
   border-color: initial !important;
   background-image: initial !important;
 }
@@ -52,9 +40,11 @@
   font-size: calc(100% * var(--user-font-size-scale, 1)) !important;
 }
 
-/* Font-family/spacing controlled by CSS variables set on :root/html */
-:root[data-a11y-font="true"] body,
-:root[data-a11y-font="true"] body * {
+/* Font-family/spacing only applied when explicitly configured via data-a11y-font-style.
+   Separated from font-size scaling so that changing only the font slider
+   does not force system-ui / fixed line-height on the page. */
+:root[data-a11y-font-style="true"] body,
+:root[data-a11y-font-style="true"] body * {
   font-family: var(
     --user-font-family,
     system-ui,
@@ -68,7 +58,8 @@
 }
 
 /* Ensure images are not affected by font rules */
-:root[data-a11y-font="true"] img {
+:root[data-a11y-font="true"] img,
+:root[data-a11y-font-style="true"] img {
   font-family: initial !important;
   font-size: initial !important;
 }
