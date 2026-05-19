@@ -1,6 +1,24 @@
 console.log("Bắt đầu");
 console.log(`=== Chạy tại ${window.location.href} ===`);
 
+const MAX_CONCURRENT = 3;
+let activeRequests = 0;
+const pendingQueue = [];
+
+function enqueue(fn) {
+  return new Promise((resolve, reject) => {
+    const run = () => {
+      activeRequests++;
+      fn().then(resolve, reject).finally(() => {
+        activeRequests--;
+        if (pendingQueue.length > 0) pendingQueue.shift()();
+      });
+    };
+    if (activeRequests < MAX_CONCURRENT) run();
+    else pendingQueue.push(run);
+  });
+}
+
 // --- 1. HÀM KIỂM TRA ẢNH LỖI ---
 function isImageMissingAlt(img) {
   // Images explicitly marked as decorative via ARIA — do not process
@@ -20,6 +38,13 @@ function isImageMissingAlt(img) {
   return invalidExtensions.some(ext => lowerAlt.endsWith(ext));
 }
 
+function isImageVisible(img) {
+  if (img.naturalWidth > 0 && img.naturalWidth <= 2 && img.naturalHeight <= 2) return false;
+  const style = window.getComputedStyle(img);
+  if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+  return true;
+}
+
 // --- 2. HÀM XỬ LÝ CHÍNH & UI PHẢN HỒI ---
 async function processSingleImage(img) {
   // A. Kiểm tra cờ để tránh xử lý lại
@@ -29,14 +54,13 @@ async function processSingleImage(img) {
 
   if (!isImageMissingAlt(img)) return;
 
-  // Skip tiny images (tracking pixels, spacer GIFs)
-  if (img.naturalWidth > 0 && img.naturalHeight > 0 &&
-      img.naturalWidth < 10 && img.naturalHeight < 10) return;
-
   // Skip images without a valid HTTP(S) src
   const src = img.getAttribute('src');
   if (!src || src.trim() === '') return;
   if (!img.src.startsWith('http://') && !img.src.startsWith('https://')) return;
+
+  // Skip invisible or tiny images (e.g. tracking pixels)
+  if (!isImageVisible(img)) return;
 
   img.dataset.aiStatus = 'processing';
   img.style.border = '4px dashed #f1c40f'; // Màu vàng
@@ -45,10 +69,10 @@ async function processSingleImage(img) {
   console.log(`[Gửi đi] Yêu cầu Lâm phân tích ảnh: ${img.src.slice(0, 30)}...`);
 
   try {
-    const response = await chrome.runtime.sendMessage({
+    const response = await enqueue(() => chrome.runtime.sendMessage({
       type: 'GET_AI_DESCRIPTION',
-      imageUrl: img.src // <-- Khớp với background.js của Lâm
-    });
+      imageUrl: img.src
+    }));
 
     console.log("[Nhận về] Phản hồi:", response);
 
@@ -97,14 +121,24 @@ function setupMutationObserver() {
 }
 
 // --- 4. KHỞI CHẠY ---
-(async function init() {
-  let aiAvailable = false;
-  try {
-    const status = await chrome.runtime.sendMessage({ type: 'CHECK_AI_STATUS' });
-    aiAvailable = status && status.configured;
-  } catch (e) {
-    console.warn('[AI Scanner] Không thể kiểm tra trạng thái AI:', e);
+async function checkAIStatus(retries) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const status = await chrome.runtime.sendMessage({ type: 'CHECK_AI_STATUS' });
+      return status && status.configured;
+    } catch (e) {
+      if (i < retries - 1) {
+        await new Promise(r => setTimeout(r, 500 * (i + 1)));
+      } else {
+        console.warn('[AI Scanner] Không thể kiểm tra trạng thái AI:', e);
+      }
+    }
   }
+  return false;
+}
+
+(async function init() {
+  const aiAvailable = await checkAIStatus(3);
 
   if (!aiAvailable) {
     console.log('[AI Scanner] AI chưa được cấu hình. Scanner đã tắt.');
