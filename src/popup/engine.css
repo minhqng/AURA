@@ -5,7 +5,7 @@
 */
 
 /* Contrast modes */
-[data-a11y-contrast="high"] *:not(img):not(video):not(canvas):not(svg) {
+[data-a11y-contrast="high"] *:not(img):not(video):not(canvas):not(svg):not(picture) {
   background-color: #000 !important;
   color: #ffff00 !important;
   border-color: #ffff00 !important;

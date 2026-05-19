@@ -45,20 +45,22 @@ cp src/config.example.js src/config.js
 
 ```
 AURA/
-├── manifest.json          # Cấu hình extension
-├── icons/                 # Icon extension (16, 48, 128px)
+├── manifest.json              # Cấu hình extension
+├── icons/                     # Icon extension (16, 48, 128px)
 ├── src/
-│   ├── config.js         # API key configuration (gitignored)
-│   ├── config.example.js # Template cấu hình
+│   ├── config.js             # API key configuration (gitignored)
+│   ├── config.example.js     # Template cấu hình
 │   ├── background/
-│   │   └── background.js # Service worker (AI features)
-│   ├── content/
-│   │   └── cs_ui.js     # Content script (contrast + font)
+│   │   └── background.js     # Service worker (AI features)
+│   ├── content-scripts/
+│   │   └── content-script.js # AI auto-scan (mô tả ảnh tự động)
 │   └── popup/
-│       ├── popup.html   # Giao diện popup
-│       ├── popup.css    # Style popup
-│       ├── popup.js     # Logic popup
-│       └── engine.css   # CSS rules cho accessibility
+│       ├── popup.html        # Giao diện popup
+│       ├── popup.css         # Style popup
+│       ├── popup.js          # Logic popup
+│       ├── engine.css        # CSS rules cho accessibility
+│       └── content/
+│           └── content.js    # Content script (contrast + font)
 ```
 
 ## Kỹ thuật

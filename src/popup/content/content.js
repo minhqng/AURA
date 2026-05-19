@@ -59,6 +59,7 @@
       root.setAttribute("data-a11y-font", "true");
     } else if (fontProvided) {
       root.removeAttribute("data-a11y-font");
+      root.style.removeProperty("--user-font-size-scale");
     }
   }
 
