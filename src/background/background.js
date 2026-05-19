@@ -19,6 +19,8 @@ const configReady = (async () => {
 // Register the listener synchronously — before any top-level await — so the
 // service worker never misses an event during a cold start.
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || !message.type) return;
+
   if (message.type === "CHECK_AI_AVAILABLE") {
     configReady.then(() => {
       sendResponse({

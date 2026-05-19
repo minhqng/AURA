@@ -1,3 +1,4 @@
+(function () {
 // --- 1. HÀM KIỂM TRA ẢNH LỖI ---
 function isImageMissingAlt(img) {
   if (!img.hasAttribute('alt') || img.alt.trim() === '') {
@@ -96,3 +97,4 @@ if (chrome.runtime && chrome.runtime.id) {
     setupMutationObserver();
   });
 }
+})();
