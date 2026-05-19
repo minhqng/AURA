@@ -33,11 +33,18 @@ document.addEventListener("DOMContentLoaded", function () {
       fontSize: scale,
     };
 
-    chrome.storage.sync.set({
-      isContrastOn: isContrastOn,
-      fontSize: fontSize,
-      userConfig: userConfig,
-    });
+    chrome.storage.sync.set(
+      {
+        isContrastOn: isContrastOn,
+        fontSize: fontSize,
+        userConfig: userConfig,
+      },
+      () => {
+        if (chrome.runtime.lastError) {
+          console.warn("Storage save error:", chrome.runtime.lastError.message);
+        }
+      }
+    );
 
     // Send messages to the active tab so content script can apply immediately
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

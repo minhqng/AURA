@@ -29,8 +29,10 @@ function isImageMissingAlt(img) {
   if (img.getAttribute('aria-hidden') === 'true') return false;
 
   // Images with aria-label or aria-labelledby already have an accessible name
-  if (img.getAttribute('aria-label')) return false;
-  if (img.getAttribute('aria-labelledby')) return false;
+  const ariaLabel = img.getAttribute('aria-label');
+  if (ariaLabel && ariaLabel.trim()) return false;
+  const ariaLabelledBy = img.getAttribute('aria-labelledby');
+  if (ariaLabelledBy && ariaLabelledBy.trim()) return false;
 
   // alt="" is intentionally empty (decorative image per WCAG) — not missing
   if (img.hasAttribute('alt') && img.alt.trim() === '') return false;
@@ -136,7 +138,7 @@ function setupMutationObserver() {
     for (const m of mutations) {
       if (m.type === 'attributes' && m.target.nodeName === 'IMG') {
         const img = m.target;
-        if (img.dataset.aiStatus) continue;
+        if (img.dataset.aiStatus === 'processing' || img.dataset.aiStatus === 'done') continue;
         processSingleImage(img).catch(() => {});
       }
     }
@@ -174,9 +176,9 @@ async function checkAIStatus(retries) {
     return;
   }
 
+  setupMutationObserver();
+
   const initialImages = document.querySelectorAll('img');
   console.log(`Tìm thấy ${initialImages.length} ảnh.`);
   initialImages.forEach(img => processSingleImage(img).catch(() => {}));
-
-  setupMutationObserver();
 })();
