@@ -73,9 +73,9 @@ async function processSingleImage(img) {
   if (!isImageMissingAlt(img)) return;
 
   // Skip images without a valid HTTP(S) src (use currentSrc for responsive images)
-  const resolvedSrc = img.currentSrc || img.src;
-  if (!resolvedSrc || resolvedSrc.trim() === '') return;
-  if (!resolvedSrc.startsWith('http://') && !resolvedSrc.startsWith('https://')) return;
+  const imageUrl = img.currentSrc || img.src;
+  if (!imageUrl || imageUrl.trim() === '') return;
+  if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) return;
 
   // Skip invisible or tiny images (e.g. tracking pixels)
   if (!isImageVisible(img)) return;
@@ -84,13 +84,15 @@ async function processSingleImage(img) {
   img.style.border = '4px dashed #f1c40f'; // Màu vàng
   img.style.transition = 'border 0.3s';
   
-  console.log(`[Gửi đi] Yêu cầu Lâm phân tích ảnh: ${img.src.slice(0, 30)}...`);
+  console.log(`[Gửi đi] Yêu cầu Lâm phân tích ảnh: ${imageUrl.slice(0, 60)}...`);
 
   try {
     let response;
-    const imageUrl = img.currentSrc || img.src;
     const cached = descriptionCache.get(imageUrl);
     if (cached) {
+      // Re-insert so this entry becomes the most recently used (LRU eviction)
+      descriptionCache.delete(imageUrl);
+      descriptionCache.set(imageUrl, cached);
       response = cached;
     } else {
       response = await enqueue(() => chrome.runtime.sendMessage({

@@ -11,6 +11,24 @@ try {
   );
 }
 
+const GLOBAL_MAX_CONCURRENT = 5;
+let globalActive = 0;
+const globalQueue = [];
+
+function globalEnqueue(fn) {
+  return new Promise((resolve, reject) => {
+    const run = () => {
+      globalActive++;
+      fn().then(resolve, reject).finally(() => {
+        globalActive--;
+        if (globalQueue.length > 0) globalQueue.shift()();
+      });
+    };
+    if (globalActive < GLOBAL_MAX_CONCURRENT) run();
+    else globalQueue.push(run);
+  });
+}
+
 async function imageUrlToBase64(url) {
   try {
     const controller = new AbortController();
@@ -116,7 +134,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: "error", message: "Thiếu URL ảnh." });
       return;
     }
-    fetchAIDescription(message.imageUrl)
+    globalEnqueue(() => fetchAIDescription(message.imageUrl))
       .then((result) => {
         sendResponse(result);
       })

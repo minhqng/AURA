@@ -51,6 +51,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Send messages to the active tab so content script can apply immediately
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (chrome.runtime.lastError) {
+        console.warn("Tab query failed:", chrome.runtime.lastError.message);
+        return;
+      }
       if (!tabs || tabs.length === 0) return;
       tabs.forEach((tab) => {
         // Skip tabs where content scripts cannot be injected

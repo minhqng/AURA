@@ -98,6 +98,10 @@ html.a11y-inverted picture, html.a11y-inverted canvas, html.a11y-inverted svg {
     chrome.storage.sync.get(
       ["isContrastOn", "fontSize", "userConfig"],
       function (res) {
+        if (chrome.runtime.lastError) {
+          console.warn("Storage read failed:", chrome.runtime.lastError.message);
+          return;
+        }
         if (res) {
           if (typeof res.isContrastOn !== "undefined") {
             enableContrast(!!res.isContrastOn);
