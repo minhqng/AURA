@@ -132,27 +132,3 @@
     }
   });
 })();
-
-// Keep the original root font-size as base so scale is deterministic
-// Maintain compatibility helper: setting root font-size directly
-var _aura_base_font_size = null;
-function _ensureBase() {
-  if (_aura_base_font_size == null) {
-    try {
-      var cs = window.getComputedStyle(document.documentElement);
-      _aura_base_font_size = parseFloat(cs && cs.fontSize) || 16;
-    } catch (e) {
-      _aura_base_font_size = 16;
-    }
-  }
-}
-
-function applyFontScale(scale) {
-  _ensureBase();
-  var newSize = _aura_base_font_size * scale;
-  try {
-    document.documentElement.style.fontSize = newSize + "px";
-  } catch (e) {
-    document.body.style.fontSize = newSize + "px";
-  }
-}

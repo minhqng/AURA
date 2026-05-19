@@ -39,6 +39,8 @@ function isImageMissingAlt(img) {
 }
 
 function isImageVisible(img) {
+  // Broken/errored images: fully loaded but no dimensions
+  if (img.complete && img.naturalWidth === 0) return false;
   if (img.naturalWidth > 0 && img.naturalWidth <= 2 && img.naturalHeight <= 2) return false;
   const style = window.getComputedStyle(img);
   if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
@@ -114,9 +116,20 @@ function setupMutationObserver() {
     }
   };
 
+  const attrObserver = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type === 'attributes' && m.target.nodeName === 'IMG') {
+        const img = m.target;
+        if (img.dataset.aiStatus) continue;
+        processSingleImage(img);
+      }
+    }
+  });
+
   const observer = new MutationObserver(observerCallback);
   if (!document.body) return;
   observer.observe(document.body, { childList: true, subtree: true });
+  attrObserver.observe(document.body, { attributes: true, subtree: true, attributeFilter: ['src', 'srcset'] });
   console.log("--> MutationObserver đã bật: Sẵn sàng bắt ảnh Lazy load.");
 }
 
