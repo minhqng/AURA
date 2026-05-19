@@ -14,6 +14,9 @@ try {
 async function imageUrlToBase64(url) {
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     const blob = await response.blob();
     const mimeType = blob.type || "image/jpeg";
 
@@ -75,7 +78,11 @@ async function fetchAIDescription(imageUrl) {
     const data = await response.json();
 
     if (data.candidates && data.candidates.length > 0) {
-      const description = data.candidates[0].content.parts[0].text;
+      const description =
+        data.candidates[0]?.content?.parts?.[0]?.text;
+      if (!description) {
+        return { status: "error", message: "AI trả về kết quả rỗng." };
+      }
       return { status: "success", description: description };
     } else {
       return { status: "error", message: "AI không trả về kết quả nào." };
