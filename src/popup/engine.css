@@ -42,19 +42,14 @@
 
 /* Font-family/spacing only applied when explicitly configured via data-a11y-font-style.
    Separated from font-size scaling so that changing only the font slider
-   does not force system-ui / fixed line-height on the page. */
+   does not force system-ui / fixed line-height on the page.
+   No fallback values: when a variable is not defined the declaration is
+   "invalid at computed-value time" and the inherited page value is kept. */
 :root[data-a11y-font-style="true"] body,
 :root[data-a11y-font-style="true"] body * {
-  font-family: var(
-    --user-font-family,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    Arial
-  ) !important;
-  line-height: var(--user-line-height, 1.2) !important;
-  letter-spacing: var(--user-letter-spacing, normal) !important;
+  font-family: var(--user-font-family) !important;
+  line-height: var(--user-line-height) !important;
+  letter-spacing: var(--user-letter-spacing) !important;
 }
 
 /* Ensure images are not affected by font rules */
