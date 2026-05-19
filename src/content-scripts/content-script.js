@@ -79,6 +79,7 @@ function setupMutationObserver() {
   };
 
   const observer = new MutationObserver(observerCallback);
+  if (!document.body) return;
   observer.observe(document.body, { childList: true, subtree: true });
   console.log("--> MutationObserver đã bật: Sẵn sàng bắt ảnh Lazy load.");
 }
