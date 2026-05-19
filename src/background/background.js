@@ -13,7 +13,10 @@ try {
 
 async function imageUrlToBase64(url) {
   try {
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
@@ -62,11 +65,17 @@ async function fetchAIDescription(imageUrl) {
       ],
     };
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
+      signal: controller.signal,
     });
+
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -84,7 +93,10 @@ async function fetchAIDescription(imageUrl) {
     }
   } catch (error) {
     console.error(error);
-    return { status: "error", message: error.message };
+    const message = error.name === 'AbortError'
+      ? 'Hết thời gian chờ phản hồi từ AI.'
+      : error.message;
+    return { status: "error", message };
   }
 }
 

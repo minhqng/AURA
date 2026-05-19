@@ -4,6 +4,7 @@ console.log(`=== Chạy tại ${window.location.href} ===`);
 const MAX_CONCURRENT = 3;
 let activeRequests = 0;
 const pendingQueue = [];
+const descriptionCache = new Map();
 
 function enqueue(fn) {
   return new Promise((resolve, reject) => {
@@ -25,6 +26,10 @@ function isImageMissingAlt(img) {
   const role = img.getAttribute('role');
   if (role === 'presentation' || role === 'none') return false;
   if (img.getAttribute('aria-hidden') === 'true') return false;
+
+  // Images with aria-label or aria-labelledby already have an accessible name
+  if (img.getAttribute('aria-label')) return false;
+  if (img.getAttribute('aria-labelledby')) return false;
 
   // alt="" is intentionally empty (decorative image per WCAG) — not missing
   if (img.hasAttribute('alt') && img.alt.trim() === '') return false;
@@ -71,27 +76,33 @@ async function processSingleImage(img) {
   console.log(`[Gửi đi] Yêu cầu Lâm phân tích ảnh: ${img.src.slice(0, 30)}...`);
 
   try {
-    const response = await enqueue(() => chrome.runtime.sendMessage({
-      type: 'GET_AI_DESCRIPTION',
-      imageUrl: img.src
-    }));
+    let response;
+    const cached = descriptionCache.get(img.src);
+    if (cached) {
+      response = cached;
+    } else {
+      response = await enqueue(() => chrome.runtime.sendMessage({
+        type: 'GET_AI_DESCRIPTION',
+        imageUrl: img.src
+      }));
+      if (response && response.status === 'success') {
+        descriptionCache.set(img.src, response);
+      }
+    }
 
     console.log("[Nhận về] Phản hồi:", response);
 
     if (response && response.status === 'success') {
       img.alt = response.description;
-      
       img.dataset.aiStatus = 'done';
       img.style.border = '4px solid #2ecc71';
       img.title = `AI Mô tả: ${response.description}`;
-      
     } else {
       throw new Error((response && response.message) || 'Lỗi không xác định từ AI');
     }
 
   } catch (error) {
     console.error("[Lỗi] Không thể lấy mô tả:", error);
-    
     img.style.border = '4px solid #e74c3c'; 
     img.dataset.aiStatus = 'error';
     img.title = "Lỗi khi gọi AI (Check Console)";
