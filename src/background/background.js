@@ -1,4 +1,17 @@
-import { GEMINI_API_KEY, GEMINI_API_URL } from "../config.js";
+let GEMINI_API_KEY = "";
+let GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+
+try {
+  const config = await import("../config.js");
+  GEMINI_API_KEY = config.GEMINI_API_KEY || "";
+  GEMINI_API_URL = config.GEMINI_API_URL || GEMINI_API_URL;
+} catch (e) {
+  console.warn(
+    "AURA: config.js not found. AI features disabled until API key is configured."
+  );
+}
+
 async function imageUrlToBase64(url) {
   try {
     const response = await fetch(url);
@@ -20,6 +33,13 @@ async function imageUrlToBase64(url) {
 }
 
 async function fetchAIDescription(imageUrl) {
+  if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_API_KEY_HERE") {
+    return {
+      status: "error",
+      message: "API key chưa được cấu hình. Vui lòng thiết lập src/config.js.",
+    };
+  }
+
   try {
     const base64Image = await imageUrlToBase64(imageUrl);
 

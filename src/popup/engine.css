@@ -50,7 +50,4 @@
   outline: 2px dashed #ffff00 !important;
 }
 
-/* Smaller helpers */
-[data-a11y-contrast="none"] * {
-  filter: none !important;
-}
+
