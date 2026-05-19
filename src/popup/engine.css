@@ -11,9 +11,10 @@
   border-color: #ffff00 !important;
   background-image: none !important;
 }
-/* Undo high-contrast overrides for all SVG descendants and picture children */
-[data-a11y-contrast="high"] svg *,
-[data-a11y-contrast="high"] picture * {
+/* Undo high-contrast overrides for all SVG descendants and picture children.
+   Double attribute selector boosts specificity (0,2,1) above the apply rule (0,1,5). */
+[data-a11y-contrast="high"][data-a11y-contrast="high"] svg *,
+[data-a11y-contrast="high"][data-a11y-contrast="high"] picture * {
   background-color: initial !important;
   color: initial !important;
   border-color: initial !important;
