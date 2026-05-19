@@ -15,12 +15,13 @@ async function imageUrlToBase64(url) {
   try {
     const response = await fetch(url);
     const blob = await response.blob();
+    const mimeType = blob.type || "image/jpeg";
 
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result.split(",")[1];
-        resolve(base64String);
+        resolve({ base64: base64String, mimeType });
       };
       reader.onerror = reject;
       reader.readAsDataURL(blob);
@@ -40,7 +41,7 @@ async function fetchAIDescription(imageUrl) {
   }
 
   try {
-    const base64Image = await imageUrlToBase64(imageUrl);
+    const { base64, mimeType } = await imageUrlToBase64(imageUrl);
 
     const requestBody = {
       contents: [
@@ -51,8 +52,8 @@ async function fetchAIDescription(imageUrl) {
             },
             {
               inline_data: {
-                mime_type: "image/jpeg",
-                data: base64Image,
+                mime_type: mimeType,
+                data: base64,
               },
             },
           ],

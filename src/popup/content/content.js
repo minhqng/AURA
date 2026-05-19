@@ -13,7 +13,7 @@
     var root = document.documentElement;
 
     // Contrast mode
-    if (config.contrastMode) {
+    if (config.contrastMode != null) {
       root.setAttribute("data-a11y-contrast", String(config.contrastMode));
     } else {
       root.setAttribute("data-a11y-contrast", "none");
