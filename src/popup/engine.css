@@ -15,12 +15,21 @@
 [data-a11y-contrast="inverted"] {
   filter: invert(100%) hue-rotate(180deg) !important;
 }
+[data-a11y-contrast="inverted"] img,
+[data-a11y-contrast="inverted"] video {
+  filter: invert(100%) hue-rotate(180deg) !important;
+}
 
 [data-a11y-contrast="grayscale"] {
   filter: grayscale(100%) !important;
 }
 
-/* Font-family/size/spacing controlled by CSS variables set on :root/html */
+/* Scale the root font-size so rem-based sizes scale proportionally */
+:root[data-a11y-font="true"] {
+  font-size: calc(100% * var(--user-font-size-scale, 1)) !important;
+}
+
+/* Font-family/spacing controlled by CSS variables set on :root/html */
 :root[data-a11y-font="true"] body,
 :root[data-a11y-font="true"] body * {
   font-family: var(
@@ -31,7 +40,6 @@
     Roboto,
     Arial
   ) !important;
-  font-size: calc(1rem * var(--user-font-size-scale, 1)) !important;
   line-height: var(--user-line-height, 1.2) !important;
   letter-spacing: var(--user-letter-spacing, normal) !important;
 }

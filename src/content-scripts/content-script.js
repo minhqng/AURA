@@ -43,7 +43,7 @@ async function processSingleImage(img) {
       img.title = `AI Mô tả: ${response.description}`;
       
     } else {
-      throw new Error(response.message || 'Lỗi không xác định từ AI');
+      throw new Error((response && response.message) || 'Lỗi không xác định từ AI');
     }
 
   } catch (error) {

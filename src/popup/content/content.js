@@ -6,47 +6,51 @@
     return isNaN(f) ? d : f;
   }
 
-  // Apply full style configuration object
+  // Apply style configuration object.
+  // Only modifies properties explicitly present in config so that
+  // partial updates (e.g. font-only or contrast-only) don't reset
+  // unrelated settings.
   function applyStyles(config) {
     if (!config || typeof config !== "object") return;
 
     var root = document.documentElement;
 
-    // Contrast mode
-    if (config.contrastMode && config.contrastMode !== "none") {
-      root.setAttribute("data-a11y-contrast", String(config.contrastMode));
-    } else {
-      root.removeAttribute("data-a11y-contrast");
+    // Contrast mode — only touch when explicitly provided
+    if ("contrastMode" in config) {
+      if (config.contrastMode && config.contrastMode !== "none") {
+        root.setAttribute("data-a11y-contrast", String(config.contrastMode));
+      } else {
+        root.removeAttribute("data-a11y-contrast");
+      }
     }
 
-    // Font settings: set CSS variables on root
-    var hasFont = false;
-    if (config.fontSize != null) {
+    // Font settings: set CSS variables on root.
+    // Only modify properties that are present in config.
+    var fontChanged = false;
+    if ("fontSize" in config && config.fontSize != null) {
       var scale = parseFloatOrDefault(config.fontSize, 1.0);
       root.style.setProperty("--user-font-size-scale", String(scale));
-      hasFont = true;
+      fontChanged = true;
     }
-    if (config.fontFamily) {
+    if ("fontFamily" in config && config.fontFamily) {
       root.style.setProperty("--user-font-family", String(config.fontFamily));
-      hasFont = true;
+      fontChanged = true;
     }
-    if (config.lineHeight != null) {
+    if ("lineHeight" in config && config.lineHeight != null) {
       var lh = parseFloatOrDefault(config.lineHeight, 1.2);
       root.style.setProperty("--user-line-height", String(lh));
-      hasFont = true;
+      fontChanged = true;
     }
-    if (config.letterSpacing != null) {
+    if ("letterSpacing" in config && config.letterSpacing != null) {
       root.style.setProperty(
         "--user-letter-spacing",
         String(config.letterSpacing) + "px"
       );
-      hasFont = true;
+      fontChanged = true;
     }
 
-    if (hasFont) {
+    if (fontChanged) {
       root.setAttribute("data-a11y-font", "true");
-    } else {
-      root.removeAttribute("data-a11y-font");
     }
   }
 
