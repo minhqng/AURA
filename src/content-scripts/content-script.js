@@ -3,10 +3,18 @@ console.log(`=== Chạy tại ${window.location.href} ===`);
 
 // --- 1. HÀM KIỂM TRA ẢNH LỖI ---
 function isImageMissingAlt(img) {
-  // Kiểm tra thiếu hoặc rỗng
-  if (!img.hasAttribute('alt') || img.alt.trim() === '') {
-    return true;
-  }
+  // Images explicitly marked as decorative via ARIA — do not process
+  const role = img.getAttribute('role');
+  if (role === 'presentation' || role === 'none') return false;
+  if (img.getAttribute('aria-hidden') === 'true') return false;
+
+  // alt="" is intentionally empty (decorative image per WCAG) — not missing
+  if (img.hasAttribute('alt') && img.alt.trim() === '') return false;
+
+  // No alt attribute at all — truly missing
+  if (!img.hasAttribute('alt')) return true;
+
+  // Alt text that is just a filename — effectively missing
   const lowerAlt = img.alt.toLowerCase();
   const invalidExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
   return invalidExtensions.some(ext => lowerAlt.endsWith(ext));
@@ -20,6 +28,10 @@ async function processSingleImage(img) {
   }
 
   if (!isImageMissingAlt(img)) return;
+
+  // Skip tiny images (tracking pixels, spacer GIFs)
+  if (img.naturalWidth > 0 && img.naturalHeight > 0 &&
+      img.naturalWidth < 10 && img.naturalHeight < 10) return;
 
   // Skip images without a valid HTTP(S) src
   const src = img.getAttribute('src');
