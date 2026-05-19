@@ -12,6 +12,13 @@ function isImageMissingAlt(img) {
   return invalidExtensions.some(ext => lowerAlt.endsWith(ext));
 }
 
+// --- 1b. MINIMUM SIZE FILTER ---
+function isImageTooSmall(img) {
+  var w = img.naturalWidth || img.width;
+  var h = img.naturalHeight || img.height;
+  return w < 50 || h < 50;
+}
+
 // --- 2. HÀM XỬ LÝ CHÍNH & UI PHẢN HỒI ---
 async function processSingleImage(img) {
   // A. Kiểm tra cờ để tránh xử lý lại
@@ -20,6 +27,13 @@ async function processSingleImage(img) {
   }
 
   if (!isImageMissingAlt(img)) return;
+
+  // Skip images with empty, data:, or blob: src (can't be fetched by service worker)
+  var src = (img.src || '').trim();
+  if (!src || src.startsWith('data:') || src.startsWith('blob:')) return;
+
+  // Skip tiny images (tracking pixels, spacer GIFs, small icons)
+  if (isImageTooSmall(img)) return;
 
   img.dataset.aiStatus = 'processing';
   img.style.border = '4px dashed #f1c40f'; // Màu vàng

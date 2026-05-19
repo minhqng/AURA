@@ -60,6 +60,9 @@
     } else if (fontProvided) {
       root.removeAttribute("data-a11y-font");
       root.style.removeProperty("--user-font-size-scale");
+      root.style.removeProperty("--user-font-family");
+      root.style.removeProperty("--user-line-height");
+      root.style.removeProperty("--user-letter-spacing");
     }
   }
 

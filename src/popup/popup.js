@@ -17,15 +17,31 @@ document.addEventListener("DOMContentLoaded", function () {
     if (previewText) previewText.style.fontSize = `${size}%`;
   }
 
-  // Save settings and notify content script(s)
-  function saveSettings() {
+  // Send a message to the active tab, swallowing errors when no content script is present
+  function sendToActiveTab(message) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (!tabs || tabs.length === 0) return;
+      tabs.forEach((tab) => {
+        if (!tab || !tab.url) return;
+        if (!tab.url.startsWith("http:") && !tab.url.startsWith("https:"))
+          return;
+        try {
+          chrome.tabs.sendMessage(tab.id, message, function () {
+            if (chrome.runtime.lastError) return;
+          });
+        } catch (e) {
+          // ignore
+        }
+      });
+    });
+  }
+
+  // Save all settings to storage and optionally notify content script
+  function saveSettings(changedKey) {
     const isContrastOn = !!contrastToggle.checked;
     const fontSize = Number(fontSlider.value) || 100;
+    const scale = fontSize / 100;
 
-    // Save a simple pair for UI and backward compatibility
-    // Also write a `userConfig` object so content script and other parts
-    // of the extension that expect that shape will pick up changes.
-    const scale = fontSize / 100; // 1.0 = 100%
     var userConfig = {
       contrastMode: isContrastOn ? "high" : "none",
       fontSize: scale,
@@ -37,47 +53,23 @@ document.addEventListener("DOMContentLoaded", function () {
       userConfig: userConfig,
     });
 
-    // Send messages to the active tab so content script can apply immediately
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs || tabs.length === 0) return;
-      tabs.forEach((tab) => {
-        // Skip tabs where content scripts cannot be injected
-        if (!tab || !tab.url) return;
-        if (!tab.url.startsWith("http:") && !tab.url.startsWith("https:"))
-          return;
-
-        // Send messages using the callback form and handle runtime.lastError
-        try {
-          chrome.tabs.sendMessage(
-            tab.id,
-            { type: "CHANGE_FONT_SIZE", payload: { scale: scale } },
-            function (response) {
-              if (chrome.runtime.lastError) {
-                // receiving end does not exist on this tab — ignore silently
-                return;
-              }
-            }
-          );
-
-          chrome.tabs.sendMessage(
-            tab.id,
-            { type: "TOGGLE_CONTRAST", payload: { isEnabled: isContrastOn } },
-            function (response) {
-              if (chrome.runtime.lastError) {
-                return;
-              }
-            }
-          );
-        } catch (e) {
-          // ignore unexpected errors
-        }
+    // Only send the message for the setting that actually changed
+    if (changedKey === "contrast") {
+      sendToActiveTab({
+        type: "TOGGLE_CONTRAST",
+        payload: { isEnabled: isContrastOn },
       });
-    });
+    } else if (changedKey === "fontSize") {
+      sendToActiveTab({
+        type: "CHANGE_FONT_SIZE",
+        payload: { scale: scale },
+      });
+    }
   }
 
   // Event listeners
   contrastToggle.addEventListener("change", () => {
-    saveSettings();
+    saveSettings("contrast");
   });
 
   fontSlider.addEventListener("input", (e) => {
@@ -86,6 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Save when the user stops interacting with the slider (on change)
   fontSlider.addEventListener("change", () => {
-    saveSettings();
+    saveSettings("fontSize");
   });
 });

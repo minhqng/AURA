@@ -11,6 +11,26 @@
   border-color: #ffff00 !important;
   background-image: none !important;
 }
+/* Restore natural rendering for elements inside SVGs (path, circle, etc.) */
+[data-a11y-contrast="high"] svg path,
+[data-a11y-contrast="high"] svg circle,
+[data-a11y-contrast="high"] svg rect,
+[data-a11y-contrast="high"] svg line,
+[data-a11y-contrast="high"] svg polyline,
+[data-a11y-contrast="high"] svg polygon,
+[data-a11y-contrast="high"] svg ellipse,
+[data-a11y-contrast="high"] svg text,
+[data-a11y-contrast="high"] svg g,
+[data-a11y-contrast="high"] svg use,
+[data-a11y-contrast="high"] svg defs,
+[data-a11y-contrast="high"] svg symbol,
+[data-a11y-contrast="high"] picture source,
+[data-a11y-contrast="high"] picture img {
+  background-color: initial !important;
+  color: inherit !important;
+  border-color: initial !important;
+  background-image: initial !important;
+}
 
 [data-a11y-contrast="inverted"] {
   filter: invert(100%) hue-rotate(180deg) !important;
