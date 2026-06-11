@@ -1,0 +1,14 @@
+{
+  "name": "aura-assistive-extension",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-extension.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:a11y": "node --test tests/popup-accessibility.test.mjs",
+    "test:e2e": "node --test tests/extension-runtime-contract.test.mjs",
+    "package": "node scripts/package-extension.mjs",
+    "ci": "npm run check && npm test && npm run package"
+  }
+}
